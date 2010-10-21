@@ -4,22 +4,15 @@
 
 from time import time
 
-# Absolute path to the folder that contains the cagt/ folder.
-histone_profiles_path = "/abighd/mlibbrecht/histone_profiles/"
+# Absolute path to the cagt folder.
+histone_profiles_path = "/path/to/cagt/"
 
 # CAGT will look in cagt/data/profiles_<cell_line> for the data.
 cell_line = "K562"
 
 # CAGT 
-peak_tags = ["TSS_all","TSS_high_confidence","TSS_high_medium_confidence","Pol2"]
-#peak_tags = ["CTCF","Nrsf","P300","Nfkb","Pol2","Max","Cfos"]
-#peak_tags = ["Nrsf","P300"]
-signal_tags = ["DNase_Crawford","DNase_Stam"]
-#peak_tags = ["Cfos","P300","Cmyc","Nrsf","Pol2","CTCF"]
-#signal_tags = ["H3K4me1","H3K4me2","H3K4me3","H3K9ac","H3K9me1",\
-#"H3K27ac","H3K27me3","H3K36me3","H4K20me1","DNAase","FAIRE","CTCF"]
-#peak_tags = ["P300","Nrsf"]
-#signal_tags = ["H3K4me2","H3K4me1"]
+peak_tags = ["P300"]
+signal_tags = ["H3K4me3"]
 
 
 ####################################################
@@ -75,23 +68,5 @@ normalize_ylims = [-4,4]
 # On the correlations page, all correlations will be shown with significance
 # greater than correlation_significance_cutoff
 correlation_significance_cutoff = 0.1
-
-
-####################################################
-# Deprecated parameters
-# --------------------------------------------
-
-#gene_proximity_distance = 10000
-#shape_num_clusters = 7
-
-profile_window_size = 1255
-profile_bin_size = 10
-
-# For make_bed_file_map
-bed_file_map_resolution = 10000
-
-
-normalize_heatmap_ylims = [-2,2]
-
 
 
