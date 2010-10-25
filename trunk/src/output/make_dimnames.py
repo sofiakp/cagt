@@ -1,5 +1,5 @@
 
-space_between_colnames = 20
+space_between_colnames = 50
 
 def make_dimnames(clustering_info, peak_tag, signal_tag, row_indices=None):
 	rownames = map(lambda peak: peak[0]+" "+str(peak[1]),\
