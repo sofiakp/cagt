@@ -10,12 +10,12 @@ def make_dimnames(clustering_info, peak_tag, signal_tag, row_indices=None):
 
 	num_cols = clustering_info.PDs[peak_tag][signal_tag].data.shape[1]
 	colnames = num_cols*[""]
-	middle = int(num_cols/2)
+	middle = int(float(num_cols)/2)
 	colnames[middle] = ["0"]
 	for i in range(middle,0,-space_between_colnames):
-		colnames[i]=[str(middle-i)]
+		colnames[i]=str(middle-i)
 	for i in range(middle+space_between_colnames,num_cols,space_between_colnames):
-		colnames[i]=[str(middle-i)]
+		colnames[i]=str(middle-i)
 	
 	
 
