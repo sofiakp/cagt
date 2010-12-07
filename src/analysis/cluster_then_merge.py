@@ -112,6 +112,14 @@ def merge_clusters(norm_data, clustering_assignments, flipping=False):
 def cluster_then_merge(clustering_info, peak_tag, signal_tag):
 	print "starting cluster_then_merge..."
 	norm_data = clustering_info.PDs[peak_tag][signal_tag].high_signal_norm_data
+
+	if norm_data.shape[0] < 5:
+		clustering_info.group_cutoffs = [0.0]*num_groups
+		clustering_info.shape_assignments[peak_tag][signal_tag] = [0]*norm_data.shape[0]
+		clustering_info.shape_assignments_unflipped[peak_tag][signal_tag] = [0]*norm_data.shape[0]
+		clustering_info.shape_assignments_oversegmented[peak_tag][signal_tag] = [0]*norm_data.shape[0]
+		clustering_info.flipped = [False]*norm_data.shape[0]
+		return
 	
 	print "clustering..."
 	t0 = time()

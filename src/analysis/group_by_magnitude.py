@@ -22,6 +22,11 @@ def assign_to_group(val, cutoffs):
 def group_by_magnitude(clustering_info, peak_tag, signal_tag):
 	data = clustering_info.PDs[peak_tag][signal_tag].data\
 	[clustering_info.high_signal[peak_tag][signal_tag]]
+	if data.shape[0] < 5:
+		clustering_info.group_cutoffs[peak_tag][signal_tag] = [0.0]*num_groups
+		clustering_info.group_assignments[peak_tag][signal_tag] = [0]*data.shape[0]
+		return
+	
 	quantiles = map(lambda i: quantile(np.array(data[i,].flat), group_by_quantile),\
 	range(data.shape[0]))
 	
