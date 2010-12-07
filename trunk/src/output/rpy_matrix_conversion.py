@@ -37,6 +37,8 @@ def python_matrix_to_r(m, dimnames=None):
 # list_to_r_matrix
 #####################################################################
 def list_to_r_matrix(lst, dimnames=None, nrow=1):
+	if len(lst) == 0 or nrow == 0:
+		return r('NA')
 	if dimnames is None:
 		r_dimnames = r['list'](rpy.StrVector(range(1,nrow+1)), 
 		                       rpy.StrVector(range(1,len(lst)/nrow+1)))

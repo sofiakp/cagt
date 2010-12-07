@@ -56,7 +56,10 @@ make_horizontal_line_at_origin = False, make_vertical_line_in_middle = True):
 	#	r_data_to_plot = deepcopy(index_r_data(clustering_info.PDs[peak_tag][signal_tag].r_data, indices))
 			r_data_to_plot = index_r_data(clustering_info.PDs[peak_tag][signal_tag].r_data, indices)
 	dimnames = make_dimnames(clustering_info, peak_tag, signal_tag, indices)
-		
+	
+	if data_to_plot.shape[0] < 5:
+		return
+	
 	# Flip those profiles in flipped in both data_to_plot and r_data_to_plot
 	if num_flipped != 0:
 		for flipped_index in flipped:
