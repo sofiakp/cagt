@@ -1,0 +1,71 @@
+##########################################################
+# CAGT: Cluster AGgregation Tool
+# written by Max Libbrecht
+# last updated 10/20/10
+##########################################################
+
+This is a detailed example of how to run CAGT.  We start with a fresh installation of Linux, install the necessary libraries, and run CAGT.
+
+Setting up the machine
+---------------------------------------
+We'll start with a fresh installation of Fedora.  We'll use an Amazon Web Services EC2 "Large" instance (64 bit), with the ami-3d3a6b78 image.  We'll run these commands:
+
+cd /root/
+mkdir install
+cd install
+yum -y install gcc-*
+yum -y install python-devel
+yum -y install svn
+yum -y install xorg-x11-xau*
+yum -y install pygtk2
+yum -y install lapack lapack-devel
+yum -y install blas
+svn co http://svn.scipy.org/svn/numpy/trunk numpy; cd numpy; python setup.py install ; cd ..
+svn co http://svn.scipy.org/svn/scipy/trunk scipy; cd scipy; python setup.py install ; cd ..
+#wget http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.0/
+yum -y install libpng libpng-devel freetype-devel freetype-utils gtk2-devel gtk+-devel pygtk2 glib-devel pygtk2-devel gnome-libs-devel pygtk2-libglade tcl tk tkinter
+matplotlib-1.0.0.tar.gz/download ; tar -xvf matplotlib-1.0.0.tar.gz ; cd matplotlib-1.0.0
+python setup.py install ; cd ..
+wget http://motifzone.net/files/public_downloads/openmotif/2.3/stable/openmotif-2.3.0-1.fc8.x86_64.rpm ; yum -y --nogpgcheck install openmotif-2.3.0-1.fc8.x86_64.rpm
+wget http://bonsai.hgc.jp/~mdehoon/software/cluster/cluster-1.49.tar.gz ; tar -xvf cluster-1.49.tar.gz ; cd cluster-1.49 ; ./configure ; python setup.py install ; cd ..
+#wget http://bedtools.googlecode.com/files/BEDTools.v2.9.0.tar.gz ;  tar -xvf BEDTools.v2.9.0.tar.gz  ; cd BEDTools-Version-2.9.0 ; make ;  
+yum -y install R
+yum -y install rpy2
+cd ..
+svn checkout https://cagt.googlecode.com/svn/trunk/ cagt
+
+
+
+Profile files
+---------------------------------------
+Next we'll get a sample profiles file and put it in cagt/data/profiles_K562/
+We'll run these commands:
+
+mkdir cagt/data/profiles_K562
+cd cagt/data/profiles_K562
+wget http://cagt.googlecode.com/files/H3K4me3_around_P300.bed3
+cd ../..
+
+Setting parameters
+---------------------------------------
+Next we'll set our parameters in parameters.py.  Set these lines in parameter.py:
+
+histone_profiles_path = "/root/cagt/"
+signal_tags = ["H3K4me3"]
+peak_tags = ["P300"]
+
+
+Running CAGT
+---------------------------------------
+Finally, we'll run CAGT.  We'll run these commands:
+
+python cagt.py 5 --cluster --correlate --make-plots --make-html
+
+
+
+
+
+
+
+
+

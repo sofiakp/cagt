@@ -10,59 +10,57 @@
 
 
 import sys
-sys.path.append('../../')
 import pickle
+import os
 
 from parameters import *
 from src.filenames import *
-from src.ProfileData.ProfileData import ProfileData
+from src.ProfileData.ProfileData import make_ProfileData
 from src.file_processing.compute_signal_ylims import compute_signal_ylims
 
 class ClusteringInfo:
-	def __init__(self, output_id):
-		self.output_id = str(output_id)
-		self.PDs = {} # peak_tag, signal_tag -> profilesInfo
-		self.num_peaks = {} # peak_tag -> num_peaks
-		self.peaks = {} # peak_tag -> peaks
-		self.low_signal = {} # peak_tag, signal_tag -> low_signal
-		self.high_signal = {} # peak_tag, signal_tag -> low_signal
-		self.shape_assignments_oversegmented = {} # peak_tag, signal_tag -> assignments
-		self.shape_assignments_unflipped = {} # peak_tag, signal_tag -> assignments
-		self.shape_assignments = {} # peak_tag, signal_tag -> assignments
-		self.flipped = {} # peak_tag, signal_tag -> [flipped]
-		self.group_cutoffs = {} # peak_tag, signal_tag -> [cutoffs]
-		self.group_assignments = {} # peak_tag, signal_tag -> assignments
-		self.gene_proximity_assignments = {} # peak_tag -> assignments
-		self.boxplot_ylims = {} # signal_tag -> ylims
+	def __init__(self, profiles_info):
+		self.profiles_info = profiles_info
+		self.PD = None
+		self.num_peaks = None
+		self.peaks = None
+		self.low_signal = None
+		self.high_signal = None
+		self.shape_clusters_oversegmented = None
+		self.shape_clusters_unflipped = None
+		self.shape_clusters = None
+		self.flipped = None
+		self.group_cutoffs = None
+		self.group_clusters = None
+		# self.gene_proximity_assignments = None
 
-		for peak_tag in peak_tags: self.PDs[peak_tag] = {}
-		for peak_tag in peak_tags: self.high_signal[peak_tag] = {}
-		for peak_tag in peak_tags: self.low_signal[peak_tag] = {}
-		for peak_tag in peak_tags: self.shape_assignments_oversegmented[peak_tag] = {}
-		for peak_tag in peak_tags: self.shape_assignments_unflipped[peak_tag] = {}
-		for peak_tag in peak_tags: self.shape_assignments[peak_tag] = {}
-		for peak_tag in peak_tags: self.flipped[peak_tag] = {}
-		for peak_tag in peak_tags: self.group_cutoffs[peak_tag] = {}
-		for peak_tag in peak_tags: self.group_assignments[peak_tag] = {}
 
-		for signal_tag in signal_tags:
-			self.boxplot_ylims[signal_tag] = compute_signal_ylims(self, signal_tag)
-
-	def make_PD(self, peak_tag, signal_tag):
-		if not self.PDs.has_key(peak_tag):
-			self.PDs[peak_tag] = {}
-		if self.PDs[peak_tag].has_key(signal_tag):
-			return
-		self.PDs[peak_tag][signal_tag] = ProfileData(self, peak_tag, signal_tag)
+	def make_PD(self):
+		self.PD, self.peaks, self.num_peaks, self.low_signal, self.high_signal = make_ProfileData(self.profiles_info, self)
+		self.ids = self.PD.data.ids
+		# if not self.PDs.has_key(peak_tag):
+		# 	self.PDs[peak_tag] = {}
+		# if self.PDs[peak_tag].has_key(signal_tag):
+		# 	return
+		# self.PDs[peak_tag][signal_tag] = ProfileData(self, peak_tag, signal_tag)
 	
-	def free_PD(self, peak_tag, signal_tag):
-		del self.PDs[peak_tag][signal_tag]
+	def free_PD(self):
+		del self.PD
+		self.PD = None
+	
 	
 	
 def clustering_info_dump(clustering_info):
-	pickle.dump(clustering_info, open(make_clustering_info_dump_filename(clustering_info.output_id),"w"))
+	if not os.path.isdir(make_profiles_foldername(clustering_info.profiles_info)):
+		os.mkdir(make_profiles_foldername(clustering_info.profiles_info))
+	pickle.dump(clustering_info, open(make_clustering_info_dump_filename(clustering_info.profiles_info),"w"))
 
-def clustering_info_load(output_id):
-	return pickle.load(open(make_clustering_info_dump_filename(output_id),"r"))
+def clustering_info_load(profiles_info):
+	return pickle.load(open(make_clustering_info_dump_filename(profiles_info),"r"))
+
+def clustering_info_delete(profiles_info):
+	filename = make_clustering_info_dump_filename(profiles_info)
+	if os.path.isfile(filename):
+		os.remove(filename)
 	
 		

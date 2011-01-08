@@ -27,53 +27,34 @@ from src.output.rpy_matrix_conversion import np_matrix_to_r
 # If normalize is True, boxplot expects high-signal indices,
 # but if normalize is False, boxplot expects full-range indices
 # That's ridiculous, I really need to change that soon.
-def boxplot(clustering_info, peak_tag, signal_tag, indices,\
+def boxplot(clustering_info, ids,\
 filename=None, title="",\
 ylim=[-4,4], ylab="Normalized Signal", xlab="Relative distance to TF binding site",\
 flipped=None, normalize=False,\
 make_horizontal_line_at_origin = False, make_vertical_line_in_middle = True):
 
-	num_flipped = 0 if flipped is None else len(flipped) 
 
-
-	# We need to deepcopy the data so we can flip some profiles
-	# I think advanced indexing with numpy implicitly deepcopys, but 
-	# we shouldn't rely on that
-	if num_flipped == 0:
-		if normalize:
-			data_to_plot = clustering_info.PDs[peak_tag][signal_tag].high_signal_norm_data[indices,:]
-			r_data_to_plot = index_r_data(clustering_info.PDs[peak_tag][signal_tag].r_high_signal_norm_data, indices)
-		else:
-			data_to_plot = clustering_info.PDs[peak_tag][signal_tag].data[indices,:]
-	#	r_data_to_plot = deepcopy(index_r_data(clustering_info.PDs[peak_tag][signal_tag].r_data, indices))
-			r_data_to_plot = index_r_data(clustering_info.PDs[peak_tag][signal_tag].r_data, indices)
-	else:
-		if normalize:
-			data_to_plot = deepcopy(clustering_info.PDs[peak_tag][signal_tag].high_signal_norm_data[indices,:])
-			r_data_to_plot = index_r_data(clustering_info.PDs[peak_tag][signal_tag].r_high_signal_norm_data, indices)
-		else:
-			data_to_plot = deepcopy(clustering_info.PDs[peak_tag][signal_tag].data[indices,:])
-	#	r_data_to_plot = deepcopy(index_r_data(clustering_info.PDs[peak_tag][signal_tag].r_data, indices))
-			r_data_to_plot = index_r_data(clustering_info.PDs[peak_tag][signal_tag].r_data, indices)
-	dimnames = make_dimnames(clustering_info, peak_tag, signal_tag, indices)
-	
-	if data_to_plot.shape[0] < 5:
-		return
-	
-	# Flip those profiles in flipped in both data_to_plot and r_data_to_plot
-	if num_flipped != 0:
-		for flipped_index in flipped:
-			i = find_in_list(indices, flipped_index)
-			data_to_plot[i,:] = deepcopy(data_to_plot[i,:][::-1])
-		r_data_to_plot = np_matrix_to_r(data_to_plot)
-		
-	
 	if filename is not None:
 		r['png'](file=filename)
 
+	num_flipped = 0 if flipped is None else len(flipped) 
 	if num_flipped != 0:
 		title += " ("+str(num_flipped)+" flipped)"
-		
+
+	if normalize:
+		data_to_plot = clustering_info.PD.high_signal_norm_data.get_rows(ids)
+	else:
+		data_to_plot = clustering_info.PD.data.get_rows(ids)
+	
+	if num_flipped != 0:
+		for flipped_id in flipped:
+			data_to_plot.set_row(flipped_id, np.array(data_to_plot.get_row(flipped_id))[::-1])
+
+	r_data_to_plot = np_matrix_to_r(data_to_plot.data)
+
+	dimnames = make_dimnames(clustering_info, ids)
+
+
 	##############################
 	# Make boxplot
 	r['boxplot'](r['as.data.frame'](r_data_to_plot), \
@@ -83,6 +64,8 @@ make_horizontal_line_at_origin = False, make_vertical_line_in_middle = True):
 	xlab=xlab,\
 	ylab=ylab,\
 	main=title,\
+	# sub="signal file: "+clustering_info.profiles_info.signal_filename+\
+	# "; peak file: "+clustering_info.profiles_info.peak_filename,\
 	medlwd=0,\
 	boxlwd=3, boxcol="#444444",\
 	whisklty=1, whisklwd=3, whiskcol="#777777",\
@@ -95,7 +78,7 @@ make_horizontal_line_at_origin = False, make_vertical_line_in_middle = True):
 	# Since rpy matrixes don't support multi-dimensional indexing, 
 	# we'll have to compute indices by hand.
 	# rpy matrixes are indexed by column, then by row
-	means = np.apply_along_axis(lambda col: sum(col)/len(col), 0, data_to_plot)
+	means = np.apply_along_axis(lambda col: sum(col)/len(col), 0, data_to_plot.data)
 	r['lines'](\
 	x=rpy.FloatVector(means),\
 	lty=1, col="Black", lwd=3)

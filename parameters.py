@@ -4,22 +4,19 @@
 
 from time import time
 
-# Absolute path to the cagt folder.
-histone_profiles_path = "/path/to/cagt/"
+# Absolute path to the folder that contains cagt.py.
+histone_profiles_path = "/abighd/mlibbrecht/histone_profiles/"
 
-# CAGT will look in cagt/data/profiles_<cell_line> for the data.
-cell_line = "K562"
+profiles_list_filename = "/abighd/mlibbrecht/extract_profiles/profiles.txt"
 
-# CAGT 
-peak_tags = ["P300"]
-signal_tags = ["H3K4me3"]
+test_mode_profiles_list_filename = "/abighd/mlibbrecht/histone_profiles/tmp/test_profiles.txt"
 
 
 ####################################################
 # Clustering parameters
 # --------------------------------------------
 
-# Most profiles have no significant signal.  Since correlation
+# Many profiles have no significant signal.  Since correlation
 # is sensitive to noise, we want to throw out the low-signal 
 # profiles and just cluster the rest. The code throws out all 
 # profiles with cutoff_quantile-th quantile less than cutoff_value.
@@ -28,7 +25,8 @@ signal_tags = ["H3K4me3"]
 # I usually use cutoff_quantile=0.75, cutoff_value=2.0.
 # Set cutoff_value=0 if you want to use all the profiles
 low_signal_cutoff_quantile = 0.9
-low_signal_cutoff_value = 5.0
+#low_signal_cutoff_value = 5.0
+# low_signal_cutoff_value = .1
 
 # These parameters guide the cluster merging.  k-means will cluster
 # the profiles into cluster_then_merge_num_clusters, then merge all
@@ -49,6 +47,8 @@ group_quantile_bounds = [.1,.9]
 # better clustering.  
 npass = 1
 
+mutual_information_cutoff = 1
+
 
 ####################################################
 # Graphical parameters
@@ -56,10 +56,13 @@ npass = 1
 
 # Y-axis limits of the boxplots.  CAGT plots all boxplots on the same y limits
 # so that they're easily comparable. 
-ylims = [0,50]
+#ylims = [0,50]
+# ylims = [0,10]
 
 # Y-axis limits for normalized profiles.  
 normalize_ylims = [-4,4]
+
+space_between_colnames = 50
 
 ####################################################
 # make-html parameters
@@ -68,5 +71,23 @@ normalize_ylims = [-4,4]
 # On the correlations page, all correlations will be shown with significance
 # greater than correlation_significance_cutoff
 correlation_significance_cutoff = 0.1
+
+
+####################################################
+# Deprecated parameters
+# --------------------------------------------
+
+#gene_proximity_distance = 10000
+#shape_num_clusters = 7
+
+profile_window_size = 1255
+profile_bin_size = 10
+
+# For make_bed_file_map
+bed_file_map_resolution = 10000
+
+
+normalize_heatmap_ylims = [-2,2]
+
 
 

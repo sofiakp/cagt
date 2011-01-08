@@ -17,6 +17,8 @@ import array
 from math import log
 import numpy as np
 
+from src.utils import MatrixMap
+
 import rpy2.robjects as rpy
 r = rpy.r
 
@@ -28,8 +30,6 @@ r = rpy.r
 # Also creates dimnames for the data.
 #######################################################################
 def read_profiles_file(filename):
-	print "reading data file..."
-	
 	file = open(filename, "r")
 
 	raw_data = []
@@ -46,6 +46,8 @@ def read_profiles_file(filename):
 	
 #	data = np.matrix(raw_data)
 	data = np.array(raw_data)
+	ids = range(len(peaks))
+	data = MatrixMap(data, ids)
 	
 	return data, peaks
 	
