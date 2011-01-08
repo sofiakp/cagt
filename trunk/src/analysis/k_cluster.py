@@ -21,10 +21,10 @@ from Pycluster import kcluster
 #######################################################################
 def k_cluster(data, num_clusters, npass=npass, dist='c'):
 	# It doesn't make sense to cluster less than nclusters profiles
-	assert(data.shape[0] > 0)
-	if data.shape[0] < num_clusters:
+	assert(len(data.ids) > 0)
+	if len(data.ids) < num_clusters:
 		return range(data.shape[0])
-	assignments, error, nfound = kcluster(data, nclusters=num_clusters, method='m', dist=dist, npass=npass)
+	assignments, error, nfound = kcluster(data.data, nclusters=num_clusters, method='m', dist=dist, npass=npass)
 	
 	# It happens occasionally that one of the clusters is empty
 	# In that case, we'll remap the assignments so that there aren't

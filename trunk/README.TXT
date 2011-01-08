@@ -59,7 +59,8 @@ Profiles file format:
 The profiles files should be named <signal_tag>_around_<peak_tag>.bed3, and they should have the following format:
 chr1<tab>start<tab>stop<tab><data>
 The start and stop locations aren't currently used by CAGT.  The <data> field should be a comma-delimited list of float values:
-chr1<tab>start<tab>stop<tab>val1,val2,...
+chr1<tab>start<tab>stop<tab>val1,val2,...,val251
+Currently it is required that the data field be exactly of length 251, and the figure-generation code assumes that each data position represents 10bp (this will be generalized soon).
 
 A sample profiles file can be found at:
 http://cagt.googlecode.com/files/H3K4me3_around_P300.bed3

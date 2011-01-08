@@ -19,26 +19,25 @@ def assign_to_group(val, cutoffs):
 	return group
 
 
-def group_by_magnitude(clustering_info, peak_tag, signal_tag):
-	data = clustering_info.PDs[peak_tag][signal_tag].data\
-	[clustering_info.high_signal[peak_tag][signal_tag]]
-	if data.shape[0] < 5:
-		clustering_info.group_cutoffs[peak_tag][signal_tag] = [0.0]*num_groups
-		clustering_info.group_assignments[peak_tag][signal_tag] = [0]*data.shape[0]
+def group_by_magnitude(clustering_info):
+	data = clustering_info.PD.high_signal_data
+	if len(data.ids) < 5:
+		clustering_info.group_cutoffs = [0.0]*num_groups
+		clustering_info.group_clusters = [0]*len(data.ids)
 		return
 	
-	quantiles = map(lambda i: quantile(np.array(data[i,].flat), group_by_quantile),\
-	range(data.shape[0]))
+	quantiles = map(lambda id: quantile(np.array(data.get_row(id)), group_by_quantile),\
+	data.ids)
 	
 	lower_bound = sorted(quantiles)[int(len(quantiles)*group_quantile_bounds[0])]
 	upper_bound = sorted(quantiles)[int(len(quantiles)*group_quantile_bounds[1])]
 	
 	rng = upper_bound-lower_bound
 	cutoffs = map(lambda i: lower_bound+rng*i/(num_groups+1), range(1,num_groups))
-	clustering_info.group_cutoffs[peak_tag][signal_tag] = cutoffs
+	clustering_info.group_cutoffs = cutoffs
 
-	clustering_info.group_assignments[peak_tag][signal_tag] =\
-	map(assign_to_group, quantiles,\
-	itertools.repeat(cutoffs,len(quantiles)))
+	clustering_info.group_clusters =\
+	assignments_to_clusters(map(assign_to_group, quantiles,\
+	itertools.repeat(cutoffs,len(quantiles))), data.ids)
 	
 	return

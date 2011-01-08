@@ -1,0 +1,19 @@
+##########################################################
+# CAGT: Cluster AGgregation Tool
+# written by Max Libbrecht
+# last updated 11/10/10
+##########################################################
+
+Specification of file formats:
+
+Profiles list file:
+-----------------------------------------------
+profiles_file_absolute_path	peak_tag	signal_tag	cell_line	peak_original_filename	signal_original_filename	ylim_lower,ylim_upper	allow_profile_flipping?	number_of_bases_per_value	low_signal_cutoff_value
+
+Signals list file:
+-----------------------------------------------
+signal_tag	cell_line	ylim_lower,ylim_upper	low_signal_cutoff_value	number_of_bases_per_value	num_bases_in_profile	filename(just the name, not a full path)
+
+Peaks list file:
+-----------------------------------------------
+peak_tag	cell_line	flip?(True/False)	filename(just the name, not a full path)

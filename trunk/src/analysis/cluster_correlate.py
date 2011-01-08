@@ -8,7 +8,7 @@ from scipy.stats import hypergeom
 
 from parameters import *
 from src.filenames import *
-from src.utils import map_assignments, transpose
+from src.utils import transpose
 from src.analysis.mutual_information import *
 
 
