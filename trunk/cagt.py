@@ -83,7 +83,7 @@ if __name__ == '__main__':
 			if cluster:
 				clustering_info_delete(profiles_info)
 			if make_plots:
-				if os.path.isfile(make_plots_done_filename(profiles_info))
+				if os.path.isfile(make_plots_done_filename(profiles_info)):
 					os.remove(make_plots_done_filename(profiles_info))
 	
 	print "output_folder:", output_folder
