@@ -1,5 +1,5 @@
 
-from src.ProfileInfo.ProfileInfo import *
+from src.ProfilesInfo.ProfilesInfo import *
 
 def read_profiles_list_file(filename, output_id):
 	f = open(filename,"r")
