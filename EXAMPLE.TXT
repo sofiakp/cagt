@@ -51,9 +51,7 @@ Setting parameters
 Next we'll set our parameters in parameters.py.  Set these lines in parameter.py:
 
 histone_profiles_path = "/root/cagt/"
-signal_tags = ["H3K4me3"]
-peak_tags = ["P300"]
-
+profiles_list_filename = "/root/cagt/profiles.txt"
 
 Running CAGT
 ---------------------------------------

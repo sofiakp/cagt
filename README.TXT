@@ -21,12 +21,9 @@ Instructions for using CAGT:
 --------------------------------
 0) Install the necessary libraries (see the Libraries section below)
 
-1) Put all the profile data in cagt/data/profiles_<cell line>/.  The files should be named and formatted as in the "Profiles file format" section.
+1) Generate a profiles list file according to the format in FILE_FORMATS.TXT
 
-2) Specify parameters in cagt/parameters.py:
-i) CAGT will look in cagt/data/profiles_<cell_line>/ for the data.  Make sure the cell_line parameter in parameters.py agrees with where you want CAGT to look.
-ii) Set peak_tags and signal_tags.  Each variable respectively should be a list of tags.  CAGT will cluster every peak_tag-signal_tag pair represented in these lists.  (That means that for every peak_tag-signal_tag pair, there must be a corresponding file in cagt/data/profiles_<cell line>/.)
-iii) You can set other parameters in parameters.py, or use the defaults.
+2) Specify histone_profiles_path and profiles_list_filename in parameters.py
 
 3) Run CAGT from the command line with 
 > python cagt.py <output_id> <mode>
@@ -38,7 +35,7 @@ mode: CAGT has four modes: "--cluster", "--correlate", "--make-plots" and "--mak
 They must be run in the following order: cluster > correlate > make-plots > make-html, but you can run one mode, let it finish, then run another mode; all the relevant data is saved after each mode completes.
 
 - In "cluster" mode, CAGT clusters each set of profiles and puts the results in output<output_id>/clustering_info.pickle.
-- In "correlate" mode, CAGT finds correlations between pairs of signal tracks around a single set of peaks, and puts the results in output<output_id>/correlations.pickle
+- In "correlate" mode (deprecated), CAGT finds correlations between pairs of signal tracks around a single set of peaks, and puts the results in output<output_id>/correlations.pickle
 - In "make-plots" mode, CAGT makes aggregation plots for each peak_tag-signal_tag pair, and puts them in their own folder in output<output_id>/
 - In "make-html" mode, CAGT makes an html view of the plots, and puts a file called "html_view.html" in output<output_id>/ (and also produces a number of supporting html pages).  Viewing html_view.html in a browser is an easy way to view the results.
 
