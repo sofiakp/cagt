@@ -13,7 +13,7 @@ cluster
 For each peak_tag-signal_tag pair, CAGT does the following:
 
 Low signal assignments:
-The goal of this stage is to remove profiles with extremely low signal from the set of profiles to be clustered.  This is done because computing correlation involves dividing by the mean, so profiles with extremely low mean can behave poorly.
+The goal of this stage is to remove profiles with extremely low signal from the set of profiles to be clustered.  This is done because computing correlation involves dividing by the variance, so profiles with extremely low mean can behave poorly.
 
 CAGT calls profiles low-signal if they have <low_signal_cutoff_quantile>-th quantile less than <low_signal_cutoff_value>.  Low-signal profiles do not participate in any other part of CAGT.
 

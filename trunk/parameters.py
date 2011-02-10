@@ -5,10 +5,12 @@
 from time import time
 
 # Absolute path to the folder that contains cagt.py.
-histone_profiles_path = "/abighd/mlibbrecht/histone_profiles/"
+histone_profiles_path = "/Users/max/Code/cagt/"
 
-profiles_list_filename = "/abighd/mlibbrecht/extract_profiles/profiles.txt"
+# Absolute path to the profiles list file
+profiles_list_filename = "/Users/max/Code/cagt/profiles.txt"
 
+# This profiles list file is used instead if --test mode is specified (not recommended)
 test_mode_profiles_list_filename = "/abighd/mlibbrecht/histone_profiles/tmp/test_profiles.txt"
 
 
