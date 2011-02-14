@@ -23,7 +23,7 @@ class ProfileInfo:
 		return self.signal_tag + " around " + self.peak_tag + " in " + self.cell_line
 
 
-class ProfilesInfoPair:
+class ProfileInfoPair:
 	def __init__(self, clustering_info1, clustering_info2, entropy1, entropy2, mutual_entropy, mutual_information):
 		self.clustering_info1 = clustering_info1
 		self.clusteirng_info2 = clustering_info2
