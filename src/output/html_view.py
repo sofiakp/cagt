@@ -25,9 +25,9 @@ def make_all_html_views(profiles_info_list):
 			logging.error("Hit error while making html")
 			logging.error("profiles_info: %s", str(clustering_info.profiles_info))
 			logging.error(traceback.format_exc())
-			print "HIT ERROR WHILE MAKING PLOT"
+			print "HIT ERROR WHILE MAKING HTML"
 			traceback.print_exc()
-			print "Skipping this plot"
+			print "Skipping this html file"
 			print "See logs for details"
 		
 

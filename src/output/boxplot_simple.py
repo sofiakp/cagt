@@ -9,6 +9,9 @@
 # supported "type" argument.
 #####################################################################
 
+import logging
+import traceback
+
 from rpy_matrix_conversion import *
 from parameters import *
 from src.filenames import *
