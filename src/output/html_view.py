@@ -4,6 +4,8 @@ sys.path.append('../../')
 import pickle
 import os
 from copy import deepcopy
+import logging
+import traceback
 
 from parameters import *
 from src.filenames import *
@@ -11,8 +13,8 @@ from src.ClusteringInfo.ClusteringInfo import *
 
 def make_all_html_views(profiles_info_list):
 	t0 = time()
-	if not os.path.isdir(make_html_views_foldername(profiles_info_list[0].output_id)):
-		os.mkdir(make_html_views_foldername(profiles_info_list[0].output_id))
+	if not os.path.isdir(make_html_views_foldername(profiles_info_list[0].output_folder)):
+		os.mkdir(make_html_views_foldername(profiles_info_list[0].output_folder))
 	make_html_view(profiles_info_list)
 	for profiles_info in profiles_info_list:
 		try:
@@ -20,14 +22,18 @@ def make_all_html_views(profiles_info_list):
 			make_html_clustering_view(clustering_info)
 			write_members(clustering_info)
 		except Exception,error:
-			print "HIT ERROR:", error, " WHILE MAKING HTML VIEWS FOR", profiles_info, " -- SKIPPING"
+			logging.error("Hit error while making html")
+			logging.error("profiles_info: %s", str(clustering_info.profiles_info))
+			logging.error(traceback.format_exc())
+			print "HIT ERROR WHILE MAKING PLOT"
+			traceback.print_exc()
+			print "Skipping this plot"
+			print "See logs for details"
 		
 
 
 def make_html_view(profiles_info_list):
-	# profiles_info_example = profiles_info_list[0]
-	# output_id = profiles_info_example.output_id
-	# hpp = "../"
+	profiles_info_example = profiles_info_list[0]
 	filename = make_filename(profiles_info_example, file_type="html_view", type_of_data="all")
 	f = open(filename, "w")
 
@@ -48,15 +54,13 @@ def make_html_view(profiles_info_list):
 
 
 def make_html_clustering_view(clustering_info):
-	# if not os.path.isdir(make_aggregation_plots_foldername(peak_tag, signal_tag, clustering_info.output_id)):
-	# 	os.mkdir(make_aggregation_plots_foldername(peak_tag, signal_tag, clustering_info.output_id))
 	
 	profiles_info = deepcopy(clustering_info.profiles_info)
 	profiles_info.output_folder = "../../"
 	peak_tag = profiles_info.peak_tag
 	signal_tag = profiles_info.signal_tag
 	cell_line = profiles_info.cell_line
-	filename = make_filename(profiles_info, file_type="html_view", type_of_data="profiles")
+	filename = make_filename(clustering_info.profiles_info, file_type="html_view", type_of_data="profiles")
 	f = open(filename, "w")
 	
 	
@@ -122,11 +126,7 @@ def make_html_clustering_view(clustering_info):
 	f.write('</html>')
 
 # def make_html_cluster_correlation_view(clustering_info, correlations, peak_tag, signal_tag1, signal_tag2):
-# 	if not os.path.isdir(make_html_cluster_correlation_view_foldername(clustering_info.output_id)):
-# 		os.mkdir(make_html_cluster_correlation_view_foldername(clustering_info.output_id))
 # 		
-# 	filename = make_html_cluster_correlation_view_filename(peak_tag, signal_tag1, signal_tag2, 
-# 	clustering_info.output_id)
 # 	f = open(filename, "w")
 # 	hpp = "../../"
 # 	
@@ -183,7 +183,6 @@ def write_members(clustering_info):
 		f.close()
 
 	profiles_info = clustering_info.profiles_info
-	output_id = profiles_info.output_id
 	peak_tag = profiles_info.peak_tag
 	signal_tag = profiles_info.signal_tag
 	
