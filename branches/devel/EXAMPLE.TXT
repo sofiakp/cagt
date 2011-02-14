@@ -6,7 +6,7 @@
 
 This is a detailed example of how to run CAGT.  We start with a fresh installation of Linux, install the necessary libraries, and run CAGT.
 
-Setting up the machine
+Installing dependencies
 ---------------------------------------
 We'll start with a fresh installation of Fedora.  We'll use an Amazon Web Services EC2 "Large" instance (64 bit), with the ami-3d3a6b78 image.  We'll run these commands:
 
@@ -35,29 +35,29 @@ cd ..
 svn checkout https://cagt.googlecode.com/svn/trunk/ cagt
 
 
-
 Profile files
 ---------------------------------------
-Next we'll get a sample profiles file and put it in cagt/data/profiles_K562/
+Next we'll get a sample profiles file.
 We'll run these commands:
 
-mkdir cagt/data/profiles_K562
-cd cagt/data/profiles_K562
+mkdir cagt/data/
+cd cagt/data/
 wget http://cagt.googlecode.com/files/H3K4me3_around_P300.bed3
 cd ../..
 
-Setting parameters
----------------------------------------
-Next we'll set our parameters in parameters.py.  Set these lines in parameter.py:
 
-histone_profiles_path = "/root/cagt/"
-profiles_list_filename = "/root/cagt/profiles.txt"
+Profiles list file
+---------------------------------------
+Next we'll create a profiles list file.  Since we only have one profiles list file, it will have just one line:
+
+/path/to/H3K4me3_around_P300.bed3	P300	H3K4me3	K562	P300_peaks.bed	H3K4me3_signal.bedgraph	0,10	True	10	1
+
 
 Running CAGT
 ---------------------------------------
 Finally, we'll run CAGT.  We'll run these commands:
 
-python cagt.py 5 --cluster --correlate --make-plots --make-html
+python cagt.py my_output_dir profiles.txt --cluster --make-plots --make-html
 
 
 

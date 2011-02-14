@@ -11,6 +11,7 @@
 
 from time import time
 from random import randrange
+import os
 
 from parameters import histone_profiles_path as histone_profiles_path_absolute
 
@@ -29,6 +30,9 @@ def make_profiles_pair_foldername(profiles_info_pair):
 	profiles_info_pair.profiles_info1.signal_filename + "_and_"\
 	+ profiles_info_pair.profiles_info2.signal_filename + "_around_"\
 	+ profiles_info_pair.peak_filename + "/"
+
+def make_log_filename(output_folder):
+	return os.path.join(output_folder, "log.txt")
 
 def make_html_views_foldername(profiles_info):
 	return output_folder + "html_views/"
