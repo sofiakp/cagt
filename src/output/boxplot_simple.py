@@ -114,9 +114,22 @@ def boxplot_simple(clustering_info, cluster_type, shape_number=None, group_numbe
 	filename = make_filename(profiles_info, file_type="boxplot", type_of_data=cluster_type,\
 	shape_number=shape_number, group_number=group_number)
 
-	boxplot(clustering_info, ids, filename=filename, title=title, ylim=ylims, flipped=flipped,\
-	make_horizontal_line_at_origin=make_horizontal_line_at_origin,
-	make_vertical_line_in_middle=make_vertical_line_in_middle, normalize=normalize)
+	try:
+		boxplot(clustering_info, ids, filename=filename, title=title, ylim=ylims, flipped=flipped,\
+		make_horizontal_line_at_origin=make_horizontal_line_at_origin,
+		make_vertical_line_in_middle=make_vertical_line_in_middle, normalize=normalize)
+	except Exception, error:
+		logging.error("Hit error while making boxplot")
+		logging.error("profiles_info: %s", str(clustering_info.profiles_info))
+		logging.error("boxplot_simple arguments: cluster_type=%s ; shape_number=%s ; group_number=%s", 
+		cluster_type, str(shape_number), str(group_number))
+		logging.error(str(error))
+		logging.error(traceback.format_exc())
+		print "HIT ERROR WHILE MAKING PLOT"
+		traceback.print_exc()
+		print "Skipping this plot"
+		print "See logs for details"
+		
 
 	return
 

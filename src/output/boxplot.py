@@ -33,7 +33,6 @@ ylim=[-4,4], ylab="Normalized Signal", xlab="Relative distance to TF binding sit
 flipped=None, normalize=False,\
 make_horizontal_line_at_origin = False, make_vertical_line_in_middle = True):
 
-
 	if filename is not None:
 		r['png'](file=filename)
 

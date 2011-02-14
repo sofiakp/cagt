@@ -11,6 +11,8 @@ from time import time
 import pickle
 import os
 import sys
+import argparse
+import logging
 
 from parameters import *
 from src.filenames import *
@@ -21,93 +23,65 @@ from src.analysis.cluster_correlate import make_all_correlations
 from src.output.html_view import make_all_html_views
 from src.file_processing.read_profiles_list_file import read_profiles_list_file
 
-	
 
 if __name__ == '__main__':
-	
 	t0 = time()
-	cluster = False
-	make_plots = False
-	correlate = False
-	make_html = False
-	proximity_cluster = False
-	test_mode = False
-	all_profiles = True
 	
-
+	sys.path.append(abspath(sys.argv[0]))
 	
-	# parse command line input
-	# for arg in sys.argv[1:]:
-	arg_index = 1
-	while True:
-		arg = sys.argv[arg_index]
-		if arg == '--make-plots':
-			make_plots = True
-		elif arg == '--make-html':
-			make_html = True
-		elif arg == '--cluster':
-			cluster = True
-		elif arg == '--correlate':
-			correlate = True
-		elif arg == '--proximity-cluster':
-			proximity_cluster = True
-		elif arg == '--test':
-			test_mode = True
-		elif arg == '--profile':
-			all_profiles = False
-			arg_index += 1
-			assert(arg_index < len(sys.argv))
-			next_arg = sys.argv[arg_index]
-			try:
-				use_only_profile = int(next_arg)
-				# assert(use_only_profile >= 0)
-				# assert(use_only_profile < len(profiles_info))
-			except:
-				print "invalid profile number:", next_arg
-				raise
-		else:
-			output_folder = arg
-		arg_index += 1
-		if arg_index == len(sys.argv): break
+	# Parse command-line arguments
+	parser = argparse.ArgumentParser(description="The CAGT tool for clustering histone shape")
+	parser.add_argument('--cluster', action='store_true', default=False, help='Tells CAGT to run in cluster mode')
+	parser.add_argument('--make_plots', action='store_true', default=False, help='Tells CAGT to run in make-plots mode')
+	parser.add_argument('--make_html', action='store_true', default=False, help='Tells CAGT to run in make-html mode')
+	parser.add_argument('-d', '--debug_mode', action='store_true', default=False, help='Tells CAGT to run in debug mode (not recommended)')
+	parser.add_argument('output_dir', help="All CAGT's output goes here. Use a different output_dir for each run")
+	parser.add_argument('profiles_list_filename', help="Path to a file in the profiles_list format (see FILE_FORMATS.TXT)")
 
-	if test_mode:
-		profiles_info_list = read_profiles_list_file(test_mode_profiles_list_filename, output_folder)
-	else:
-		profiles_info_list = read_profiles_list_file(profiles_list_filename, output_folder)
+	args = parser.parse_args(sys.argv[1:])
+	args.output_dir = os.path.normpath(args.output_dir)
+	output_folder = args.output_dir
+	print "Outputting to folder: %s" % output_folder
+	if not os.is_dir(args.output_dir):
+		os.mkdir(args.output_dir)
 
-	if not all_profiles:
-		profiles_info_list = [profiles_info_list[use_only_profile]]
-	
-	if test_mode:
+	log_filename = make_log_filename(output_folder)
+	print "Logging to: %s", log_filename
+	logging.basicConfig(filename=log_filename, level=logging.DEBUG)
+	logging.info("Starting CAGT")
+	logging.info("args = %s", str(args))
+
+	profiles_info_list = read_profiles_list_file(args.profiles_list_filename, output_folder)
+
+	# If we're running in debug mode, delete old output and reproduce it
+	if args.debug_mode:
 		for profiles_info in profiles_info_list:
-			if cluster:
+			if args.cluster:
 				clustering_info_delete(profiles_info)
-			if make_plots:
+			if args.make_plots:
 				if os.path.isfile(make_plots_done_filename(profiles_info)):
 					os.remove(make_plots_done_filename(profiles_info))
 	
-	print "output_folder:", output_folder
-	# if not os.path.isdir(make_output_foldername(output_id)):
-	# 	os.system('mkdir '+make_output_foldername(output_id))
 	
 	for profiles_info in profiles_info_list:
 		print "---------------------------------"
 		print "Starting", profiles_info, "..."
+		logging.info("Starting %s...", str(profiles_info))
 		t0 = time()
-		if cluster:
-			print "Clustering..."
+		if args.cluster:
+			logging.info("starting clustering...")
 			t_cluster = time()
 			cluster_profile(profiles_info)
 			# clustering_info_dump(clustering_info)
-			print "Time to cluster:", time() - t_cluster
+			logging("Time to cluster: %s", time() - t_cluster)
 		
-		if make_plots:
-			print "Making plots..."
+		if args.make_plots:
+			logging.info("starting make_plots...")
 			t_plots = time()
 			make_plots_for_profile(profiles_info)
-			print "Time to make plots:", time()-t_plots
+			logging.info("Time to make plots: %s", time()-t_plots)
 		
-		print "Total time for", profiles_info, ":", time()-t0
+		logging.info("Total time for %s: %i", str(profile_info), time()-t0)
 
 	# if proximity_cluster:
 	# 	print "Clustering based on gene proximity..."
@@ -122,14 +96,15 @@ if __name__ == '__main__':
 	# 	pickle.dump(correlations, open(make_correlations_filename(output_id),"w"))
 	# 	print "time to make correlations:", time()-t_cor
 	
-	if make_html:
+	if args.make_html:
 		print "Making html..."
+		logging.info("making html...")
 		t_html = time()
 		make_all_html_views(profiles_info_list)
-		print "Time to make html:", time()-t_html
+		logging.info("Time to make html: %i", time()-t_html)
 	
 		
-	print "total time:", time() - t0
+	logging.info("total time: %i", time() - t0)
 			
 	
 	
