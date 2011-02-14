@@ -11,8 +11,7 @@
 
 from time import time
 from random import randrange
-
-from parameters import histone_profiles_path as histone_profiles_path_absolute
+import os
 
 # Output id
 # def make_output_id():
@@ -21,23 +20,26 @@ from parameters import histone_profiles_path as histone_profiles_path_absolute
 #  	return histone_profiles_path + "output" + output_folder + "/"
 
 def make_profiles_foldername(profiles_info):
-	return profiles_info.output_folder + profiles_info.signal_filename + "_around_" +\
-	profiles_info.peak_filename + "/"
+	return os.path.join(profiles_info.output_folder, profiles_info.signal_filename + "_around_" +\
+	profiles_info.peak_filename)
 	
 def make_profiles_pair_foldername(profiles_info_pair):
-	return profiles_info_pair.output_folder +\
+	return os.path.join(profiles_info_pair.output_folder,
 	profiles_info_pair.profiles_info1.signal_filename + "_and_"\
 	+ profiles_info_pair.profiles_info2.signal_filename + "_around_"\
-	+ profiles_info_pair.peak_filename + "/"
+	+ profiles_info_pair.peak_filename + "/")
 
-def make_html_views_foldername(profiles_info):
-	return output_folder + "html_views/"
+def make_log_filename(output_folder):
+	return os.path.join(output_folder, "log.txt")
+
+def make_html_views_foldername(output_folder):
+	return os.path.join(output_folder, "html_views")
 
 def make_clustering_info_dump_filename(profiles_info):
-	return make_profiles_foldername(profiles_info) +'clustering_info.pickle'
+	return os.path.join(make_profiles_foldername(profiles_info), 'clustering_info.pickle')
 
 def make_plots_done_filename(profiles_info):
-	return make_profiles_foldername(profiles_info) + "done_making_plots.txt"
+	return os.path.join(make_profiles_foldername(profiles_info), "done_making_plots.txt")
 
 def make_filename(profiles_info, file_type, type_of_data,\
 shape_number=None, group_number=None):
@@ -51,9 +53,9 @@ shape_number=None, group_number=None):
 
 	if file_type == "html_view":
 		if type_of_data == "all":
-			foldername = make_output_foldername(profiles_info)
+			foldername = profiles_info.output_folder
 		else:
-			foldername = make_html_views_foldername(profiles_info)
+			foldername = make_html_views_foldername(profiles_info.output_folder)
 	else:
 		foldername = make_profiles_foldername(profiles_info)
 
@@ -82,7 +84,7 @@ shape_number=None, group_number=None):
 	elif file_type == "html_view":
 		extension = ".html"
 	
-	filename = foldername + file_type + "_" + type_of_data_name + extension
+	filename = os.path.join(foldername, file_type + "_" + type_of_data_name + extension)
 	return filename
 
 
