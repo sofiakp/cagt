@@ -1,1 +1,1 @@
-/Users/max/cagt/Code/data/profiles_K562/H3K4me3_around_P300.bed3	P300	H3K4me3	K562	H3K4me3_around_P300.bed3	0,10	True	10	1
+/Users/max/Code/cagt/data/profiles_K562/H3K4me3_around_P300.bed3	P300	H3K4me3	K562	P300_peaks.bed	H3K4me3_signal.bedgraph	0,10	True	10	1
