@@ -11,7 +11,15 @@ from time import time
 import pickle
 import os
 import sys
-import argparse
+
+# try:
+# 	import argparse
+# except ImportError:
+# 	print "CAGT requires the library argparse, which is available in python 2.7"
+# 	raise
+
+import src.argparse
+
 import logging
 
 from parameters import *
@@ -38,7 +46,7 @@ if __name__ == '__main__':
 	sys.path.append(os.path.abspath(sys.argv[0]))
 	
 	# Parse command-line arguments
-	parser = argparse.ArgumentParser(description="The CAGT tool for clustering histone shape")
+	parser = src.argparse.ArgumentParser(description="The CAGT tool for clustering histone shape")
 	parser.add_argument('--cluster', action='store_true', default=False, help='Tells CAGT to run in cluster mode')
 	parser.add_argument('--make-plots', action='store_true', default=False, help='Tells CAGT to run in make-plots mode')
 	parser.add_argument('--make-html', action='store_true', default=False, help='Tells CAGT to run in make-html mode')
