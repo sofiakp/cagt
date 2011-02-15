@@ -41,6 +41,7 @@ Run $ python cagt.py --help for a help message describing the modes.
 Libraries:
 --------------------------------
 CAGT requires these libraries:
+python 2.7 or higher
 scipy - http://www.scipy.org/
 Pycluster - http://bonsai.hgc.jp/~mdehoon/software/cluster/software.htm
 rpy2 - http://rpy.sourceforge.net/rpy2.html

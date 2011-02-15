@@ -24,6 +24,14 @@ from src.output.html_view import make_all_html_views
 from src.file_processing.read_profiles_list_file import read_profiles_list_file
 
 
+def log_profiles_info(profiles_info):
+	logging.info("Some info about profiles_info: %s" % str(profiles_info))
+	logging.info("filenames: %s ; %s" % (profiles_info.peak_filename, profiles_info.signal_filename ))
+	logging.info("low_signal_cutoff_value: %s ; ylims: %s ; flip: %s ; bin_size: %s" \
+	% (profiles_info.low_signal_cutoff_value, str(profiles_info.ylims), \
+	str(profiles_info.flip), str(profiles_info.bin_size)))
+
+
 if __name__ == '__main__':
 	t0 = time()
 	
@@ -72,12 +80,12 @@ if __name__ == '__main__':
 		print "---------------------------------"
 		print "Starting", profiles_info, "..."
 		logging.info("Starting %s...", str(profiles_info))
+		# log_profiles_info(profiles_info)
 		t0 = time()
 		if args.cluster:
 			logging.info("starting clustering...")
 			t_cluster = time()
 			cluster_profile(profiles_info)
-			# clustering_info_dump(clustering_info)
 			logging.info("Time to cluster: %s", time() - t_cluster)
 		
 		if args.make_plots:
