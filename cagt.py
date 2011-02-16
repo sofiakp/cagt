@@ -61,7 +61,7 @@ if __name__ == '__main__':
 		print "Picking up from where the last run left off..."
 		print "(Pick a different output directory to start fresh)"
 		logging.info("Picking up from the last run")
-		logging.info("Directory contains: %s" % str(os.path.listdir(args.output_dir)))
+		logging.info("Directory contains: %s" % str(os.listdir(args.output_dir)))
 
 	log_filename = make_log_filename(output_folder)
 	print "Logging to: %s" % log_filename
