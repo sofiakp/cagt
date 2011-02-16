@@ -43,7 +43,7 @@ def make_html_view(profiles_info_list):
 	for profiles_info in profiles_info_list:
 		f.write("<a href=")
 		profiles_info_copy = deepcopy(profiles_info)
-		profiles_info_copy.output_folder = "../"
+		profiles_info_copy.output_folder = "./"
 		link = make_filename(profiles_info_copy, file_type="html_view", type_of_data="profiles")
 		f.write(link)
 		f.write(">")
@@ -56,7 +56,7 @@ def make_html_view(profiles_info_list):
 def make_html_clustering_view(clustering_info):
 	
 	profiles_info = deepcopy(clustering_info.profiles_info)
-	profiles_info.output_folder = "../../"
+	profiles_info.output_folder = "../"
 	peak_tag = profiles_info.peak_tag
 	signal_tag = profiles_info.signal_tag
 	cell_line = profiles_info.cell_line
