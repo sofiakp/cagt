@@ -2,7 +2,7 @@
 # filenames.py
 # -----------------------
 # This file is responsible for generating filenames everywhere
-# else in CAGT.  Filenames should never be built elsewhere:
+# else in CAGT.	 Filenames should never be built elsewhere:
 # instead, define a new function here and call it there;
 # That makes it much easier to find and refer to files once
 # they're written.
@@ -15,9 +15,9 @@ import os
 
 # Output id
 # def make_output_id():
-# 	return str(randrange(100000))
+#		return str(randrange(100000))
 # def make_output_foldername(output_folder):
-#  	return histone_profiles_path + "output" + output_folder + "/"
+#		return histone_profiles_path + "output" + output_folder + "/"
 
 def make_profiles_foldername(profiles_info):
 	return os.path.join(profiles_info.output_folder, profiles_info.signal_filename + "_around_" +\
@@ -45,17 +45,14 @@ def make_filename(profiles_info, file_type, type_of_data,\
 shape_number=None, group_number=None):
 		
 	assert(file_type in ["boxplot", "members", "heatmap", "html_view"])
-	assert(type_of_data in ["all", "high_signal", "low_signal", "magnitude_group",\
+	assert(type_of_data in ["summary", "all", "high_signal", "low_signal", "magnitude_group",\
 	"shape_cluster", "shape_cluster_unflipped","shape_cluster_oversegmented", "grouped_shape",\
 	"signal", "peak", "profiles"])
-	if file_type == "html_view": assert(type_of_data in ["all","signal","peak","profiles"])
-	if file_type != "html_view": assert(type_of_data not in ["signal","peak","profiles"])
+	# if file_type == "html_view": assert(type_of_data in ["all","signal","peak","profiles"])
+	if file_type != "html_view": assert(type_of_data not in ["summary", "signal","peak","profiles"])
 
-	if file_type == "html_view":
-		if type_of_data == "all":
-			foldername = profiles_info.output_folder
-		else:
-			foldername = make_html_views_foldername(profiles_info.output_folder)
+	if file_type == "html_view" and type_of_data == "summary":
+		foldername = profiles_info.output_folder
 	else:
 		foldername = make_profiles_foldername(profiles_info)
 
