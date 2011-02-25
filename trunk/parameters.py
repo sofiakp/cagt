@@ -40,6 +40,13 @@ group_quantile_bounds = [.1,.9]
 # better clustering.  
 npass = 1
 
+# (In development -- not recommended)
+# K-means clustering is usually initialized by picking centers 
+# uniformly at random.  K-means++ is an alternate initialization
+# distribution which sometimes makes the clustering more stable.
+use_kmeans_plus_plus = False
+
+# Not used yet
 mutual_information_cutoff = 1
 
 
