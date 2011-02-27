@@ -11,6 +11,7 @@ r = rpy.r
 
 from copy import deepcopy
 import numpy as np
+import gc
 
 import sys
 
@@ -32,6 +33,9 @@ filename=None, title="",\
 ylim=[-4,4], ylab="Normalized Signal", xlab="Relative distance to TF binding site",\
 flipped=None, normalize=False,\
 make_horizontal_line_at_origin = False, make_vertical_line_in_middle = True):
+
+	# manually garbage collect
+	gc.collect()
 
 	if filename is not None:
 		r['png'](file=filename)
@@ -111,6 +115,10 @@ make_horizontal_line_at_origin = False, make_vertical_line_in_middle = True):
 	if filename is not None:
 		r('dev.off()')
 		
+	del r_data_to_plot
+		
+	gc.collect()
+	
 	return 
 	
 	

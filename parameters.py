@@ -40,6 +40,13 @@ group_quantile_bounds = [.1,.9]
 # better clustering.  
 npass = 1
 
+# (In development -- not recommended)
+# K-means clustering is usually initialized by picking centers 
+# uniformly at random.  K-means++ is an alternate initialization
+# distribution which sometimes makes the clustering more stable.
+use_kmeans_plus_plus = False
+
+# Not used yet
 mutual_information_cutoff = 1
 
 
@@ -64,6 +71,13 @@ space_between_colnames = 50
 # On the correlations page, all correlations will be shown with significance
 # greater than correlation_significance_cutoff
 correlation_significance_cutoff = 0.1
+
+####################################################
+# gene-proxmity parameters
+# --------------------------------------------
+
+gene_proximity_distance = 10000
+genome_length = 3000000000
 
 
 ####################################################
