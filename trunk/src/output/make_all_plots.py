@@ -1,6 +1,9 @@
 
 from time import time
 import os
+import sys
+import logging
+import traceback
 
 from parameters import *
 from src.filenames import *
@@ -23,7 +26,14 @@ def make_plots_for_profile(profiles_info):
 		else:
 			print "skipping making plots for:", profiles_info
 	except Exception,error:
-		print "HIT ERROR:", error, " WHILE MAKING PLOTS FOR", profiles_info, " -- SKIPPING"
+		logging.error("Hit error in make_plots_for_profile")
+		logging.error("profiles_info: %s", str(profiles_info))
+		logging.error(str(error))
+		logging.error(traceback.format_exc())
+		print "HIT ERROR WHILE MAKING PLOTS FOR", profiles_info, " -- SKIPPING"
+		traceback.print_exc()
+		print "Skipping this set of profiles"
+		print "See logs for details"
 
 
 
