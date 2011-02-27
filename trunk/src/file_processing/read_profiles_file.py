@@ -19,6 +19,8 @@ import numpy as np
 
 from src.utils import MatrixMap
 
+import logging
+
 import rpy2.robjects as rpy
 r = rpy.r
 
@@ -29,6 +31,24 @@ r = rpy.r
 # Reads the passed file and converts it to an numpy matrix.
 # Also creates dimnames for the data.
 #######################################################################
+
+made_converting_NaNs_warning = False
+
+def convert_to_float(x):
+  try:
+    ret = float(x)
+    if ret == float('NaN'):
+      if not made_converting_NaNs_warning:
+        logging.warning('Converting NaNs to 0s')
+        global made_converting_NaNs_warning
+        made_converting_NaNs_warning = True
+      return float(0)
+    else:
+      return ret
+  except TypeError:
+    logging.warning('Couldn\'t convert value "%s" to float' % x)
+    return float(0)
+
 def read_profiles_file(filename):
 	file = open(filename, "r")
 
@@ -41,7 +61,7 @@ def read_profiles_file(filename):
 		stop = int(line.split()[2])
 #		rownames.append(chr+" "+str((start+stop)/2))
 		peaks.append([chr, (start+stop)/2])
-		vals = array.array('f', map(lambda x: float(x), line.split()[3].split(',')))
+		vals = array.array('f', map(convert_to_float, line.split()[3].split(',')))
 		raw_data.append(vals)
 	
 #	data = np.matrix(raw_data)
