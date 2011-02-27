@@ -10,8 +10,9 @@ import traceback
 from parameters import *
 from src.filenames import *
 from src.ClusteringInfo.ClusteringInfo import *
+from src.analysis.gene_proximity_cluster import *
 
-def make_all_html_views(profiles_info_list):
+def make_all_html_views(profiles_info_list, do_gene_proximity=False):
   t0 = time()
   if not os.path.isdir(make_html_views_foldername(profiles_info_list[0].output_folder)):
     os.mkdir(make_html_views_foldername(profiles_info_list[0].output_folder))
@@ -20,7 +21,7 @@ def make_all_html_views(profiles_info_list):
     try:
       clustering_info = clustering_info_load(profiles_info)
       make_html_clustering_view(clustering_info)
-      write_sets(clustering_info)
+      write_sets(clustering_info, do_gene_proximity)
     except Exception,error:
       logging.error("Hit error while making html")
       logging.error("profiles_info: %s", str(clustering_info.profiles_info))
@@ -128,7 +129,7 @@ def make_html_clustering_view(clustering_info):
   f.write('</html>')
 
 
-def make_html_set_view(clustering_info, members, type_of_data, shape_number=None, group_number=None):
+def make_html_set_view(clustering_info, members, type_of_data, shape_number=None, group_number=None, do_gene_proximity=False):
   profiles_info = clustering_info.profiles_info
   filename = make_filename(profiles_info, "html_view", type_of_data, shape_number, group_number)
   f = open(filename, "w")
@@ -152,13 +153,27 @@ def make_html_set_view(clustering_info, members, type_of_data, shape_number=None
   f.write(image)
   
   if type_of_data in ["shape_cluster", "shape_cluster_unflipped", "magnitude_group", "high_signal", "low_signal"]:
-    members_list = "<a href=%s>Click here for a list of members...<br>" % \
+    members_list = "<a href=%s>Click here for a list of members...</a><br>" % \
     make_filename(profiles_info_relative, "members", type_of_data, shape_number, group_number)
     f.write(members_list)
+    
+  if do_gene_proximity:
+    members_proximity_assignments = map(lambda m: clustering_info.gene_proximity_assignments[m], members)
+    counts = {GENE_DISTAL: 0, INSIDE_GENE: 0, UPSTREAM_POS: 0, UPSTREAM_NEG: 0}
+    for a in members_proximity_assignments:
+      counts[a] += 1
+    
+    expected = clustering_info.expected_gene_proximity
+    f.write('<br>')
+    f.write("Total members: %i<br>" % len(members))
+    f.write("Gene distal: %i  (expected: %i) <br>" % (counts[GENE_DISTAL], expected[GENE_DISTAL]*len(members)))
+    f.write("Within %ibp of promoter: %i  (expected: %i) <br>" % \
+    (gene_proximity_distance, counts[UPSTREAM_POS]+counts[UPSTREAM_NEG], expected[UPSTREAM_POS]*len(members)+expected[UPSTREAM_NEG]*len(members)))
+    
   
   
 
-def write_sets(clustering_info):
+def write_sets(clustering_info, do_gene_proximity=False):
   def write_members_list_to_file(assignments, filename):
     f = open(filename,"w")
     f.write(reduce(lambda x,y: x+"\n"+y,map(str, assignments),""))
@@ -169,30 +184,30 @@ def write_sets(clustering_info):
   signal_tag = profiles_info.signal_tag
 
 
-  make_html_set_view(clustering_info, members=clustering_info.ids, type_of_data="all")
+  make_html_set_view(clustering_info, members=clustering_info.ids, type_of_data="all", do_gene_proximity=do_gene_proximity)
   write_members_list_to_file(clustering_info.ids,\
   make_filename(profiles_info, file_type="members", type_of_data="all"))
   
-  make_html_set_view(clustering_info, members=clustering_info.high_signal, type_of_data="high_signal")
+  make_html_set_view(clustering_info, members=clustering_info.high_signal, type_of_data="high_signal", do_gene_proximity=do_gene_proximity)
   write_members_list_to_file(clustering_info.high_signal,\
   make_filename(profiles_info, file_type="members", type_of_data="high_signal"))
   
-  make_html_set_view(clustering_info, members=clustering_info.low_signal, type_of_data="low_signal")
+  make_html_set_view(clustering_info, members=clustering_info.low_signal, type_of_data="low_signal", do_gene_proximity=do_gene_proximity)
   write_members_list_to_file(clustering_info.low_signal,\
   make_filename(profiles_info, file_type="members", type_of_data="low_signal"))
   
   for number in range(len(clustering_info.shape_clusters)):
-    make_html_set_view(clustering_info, members=clustering_info.shape_clusters[number], type_of_data="shape_cluster", shape_number=number)
+    make_html_set_view(clustering_info, members=clustering_info.shape_clusters[number], type_of_data="shape_cluster", shape_number=number, do_gene_proximity=do_gene_proximity)
     write_members_list_to_file(clustering_info.shape_clusters[number],\
     make_filename(profiles_info, file_type="members", type_of_data="shape_cluster",shape_number=number))
   
   for number in range(len(clustering_info.shape_clusters_unflipped)):
-    make_html_set_view(clustering_info, members=clustering_info.shape_clusters_unflipped[number], type_of_data="shape_cluster_unflipped", shape_number=number)
+    make_html_set_view(clustering_info, members=clustering_info.shape_clusters_unflipped[number], type_of_data="shape_cluster_unflipped", shape_number=number, do_gene_proximity=do_gene_proximity)
     write_members_list_to_file(clustering_info.shape_clusters_unflipped[number],\
     make_filename(profiles_info, file_type="members", type_of_data="shape_cluster_unflipped",shape_number=number))
   
   for number in range(len(clustering_info.group_clusters)):
-    make_html_set_view(clustering_info, members=clustering_info.group_clusters[number], type_of_data="magnitude_group", group_number=number)
+    make_html_set_view(clustering_info, members=clustering_info.group_clusters[number], type_of_data="magnitude_group", group_number=number, do_gene_proximity=do_gene_proximity)
     write_members_list_to_file(clustering_info.group_clusters[number],\
     make_filename(profiles_info, file_type="members", type_of_data="magnitude_group",group_number=number))
     

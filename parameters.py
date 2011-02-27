@@ -72,6 +72,13 @@ space_between_colnames = 50
 # greater than correlation_significance_cutoff
 correlation_significance_cutoff = 0.1
 
+####################################################
+# gene-proxmity parameters
+# --------------------------------------------
+
+gene_proximity_distance = 10000
+genome_length = 3000000000
+
 
 ####################################################
 # Deprecated parameters

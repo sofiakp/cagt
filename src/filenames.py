@@ -35,11 +35,19 @@ def make_log_filename(output_folder):
 def make_html_views_foldername(output_folder):
 	return os.path.join(output_folder, "html_views")
 
+def make_genes_filename(output_folder):
+  if not os.path.isdir(os.path.join(output_folder, 'tmp')):
+    os.mkdir(os.path.join(output_folder, 'tmp'))
+  return os.path.join(output_folder, "tmp", "genes.pickle")
+
 def make_clustering_info_dump_filename(profiles_info):
 	return os.path.join(make_profiles_foldername(profiles_info), 'clustering_info.pickle')
 
 def make_plots_done_filename(profiles_info):
 	return os.path.join(make_profiles_foldername(profiles_info), "done_making_plots.txt")
+
+def make_gene_proximity_filename(profiles_info):
+  return os.path.join(make_profiles_foldername(profiles_info), "gene_proximity.txt")
 
 def make_filename(profiles_info, file_type, type_of_data,\
 shape_number=None, group_number=None):
