@@ -1,6 +1,8 @@
 
 from time import time
 import os
+import logging
+import traceback
 
 from parameters import *
 from src.filenames import *
