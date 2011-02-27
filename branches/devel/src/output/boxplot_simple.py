@@ -9,6 +9,9 @@
 # supported "type" argument.
 #####################################################################
 
+import logging
+import traceback
+
 from rpy_matrix_conversion import *
 from parameters import *
 from src.filenames import *
@@ -35,7 +38,7 @@ def boxplot_simple(clustering_info, cluster_type, shape_number=None, group_numbe
 	peak_tag = profiles_info.peak_tag
 	signal_tag = profiles_info.signal_tag
 
-	output_id = clustering_info.output_id
+	# output_id = clustering_info.output_id
 
 	# ids
 	if cluster_type == "all":
