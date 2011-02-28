@@ -9,12 +9,18 @@
 
 import sys
 sys.path.append('../../')
-
-from parameters import *
+from random import randrange
+from copy import deepcopy
 
 from Pycluster import kcluster
 from numpy import corrcoef
+import numpy as np
 
+from parameters import *
+
+# def corr_dist(x,y):
+#   ret = corrcoef(x,y)[0,1]
+#   return float(ret)
 
 # From http://yongsun.me/tag/python/
 def kmeansPP(data, k):  
@@ -22,28 +28,22 @@ def kmeansPP(data, k):
     X = data.data
     n = len(data.ids)
     'choose the 1st seed randomly, and store D(x)^2 in D[]'  
-    centers = [X[randint(n),:]]  
-    D = [corrcoef(x,centers[0]) for x in X]  
-    for _ in range(k-1):  
+    centers = [randrange(n)]  
+    distance_matrix = corrcoef(X)+1
+    D = distance_matrix[centers[0],:]
+    for _ in range(k-1):
         bestDsum = bestIdx = -1  
         for i in range(n):  
-            'Dsum = sum_{x in X} min(D(x)^2,||x-xi||^2)'  
-            Dsum = reduce(lambda x,y:x+y,  
-                          (min(D[j], corrcoef(X[j,:],X[i,:])) for j in xrange(n)))  
-            if bestDsum < 0 or Dsum < bestDsum:  
-                bestDsum, bestIdx  = Dsum, i  
-        centers.append (X[bestIdx,:])  
-        D = [min(D[i], corrcoef(X[i,:],X[bestIdx,:])) for i in xrange(n)]  
+            Dsum = np.sum( np.minimum(D, distance_matrix[i,:]) )  
+            if bestIdx < 0 or Dsum < bestDsum:
+              bestDsum, bestIdx = Dsum, i  
+        centers.append(bestIdx)  
+        D = np.minimum(D, distance_matrix[bestIdx,:])
         
     # Compute assignments based on the centers
-    assignments = None
-    def nearest_center(index):
-      x = X[index,:]
-      return min( map(lambda i: (i, corrcoef(x, centers[i])), range(k)), 
-                  cmp=lambda a,b: cmp(a[1],b[1]) )[0]
+    assignments = np.argmin( distance_matrix[:,centers], axis=1)
+    return deepcopy(list(assignments.flat))
     
-    return map(nearest_center, range(n))
-
 
 #######################################################################
 # k_cluster()
@@ -51,22 +51,29 @@ def kmeansPP(data, k):
 # Simple wrapper on the kcluster function
 #######################################################################
 def k_cluster(data, num_clusters, npass=npass, dist='c'):
-	# It doesn't make sense to cluster less than nclusters profiles
-	assert(len(data.ids) > 0)
-	if len(data.ids) < num_clusters:
-		return range(data.shape[0])
-	assignments, error, nfound = kcluster(data.data, nclusters=num_clusters, method='m', dist=dist, npass=npass)
-	
-	# It happens occasionally that one of the clusters is empty
-	# In that case, we'll remap the assignments so that there aren't
-	# any gaps in the cluster numbers
-	if len(list(set(assignments))) < num_clusters:
-		allocated_numbers = list(set(assignments))
-		reverse_map = {}
-		for i in range(len(allocated_numbers)):
-			reverse_map[allocated_numbers[i]] = i
-		assignments = map(lambda x: reverse_map[x], allocated_numbers)
-	
-	return assignments
-		
-	
+  # It doesn't make sense to cluster less than nclusters profiles
+  assert(len(data.ids) > 0)
+  if len(data.ids) < num_clusters:
+    return range(data.shape[0])
+  
+  if use_kmeans_plus_plus:
+    kmeanspp_assignment = kmeansPP(data, num_clusters)
+    assignments, error, nfound = kcluster(data.data, nclusters=num_clusters, 
+    method='m', dist=dist, npass=npass, initialid=kmeanspp_assignment)
+  else:
+    assignments, error, nfound = kcluster(data.data, nclusters=num_clusters, 
+    method='m', dist=dist, npass=npass)
+  
+  # It happens occasionally that one of the clusters is empty
+  # In that case, we'll remap the assignments so that there aren't
+  # any gaps in the cluster numbers
+  if len(list(set(assignments))) < num_clusters:
+    allocated_numbers = list(set(assignments))
+    reverse_map = {}
+    for i in range(len(allocated_numbers)):
+      reverse_map[allocated_numbers[i]] = i
+    assignments = map(lambda x: reverse_map[x], allocated_numbers)
+  
+  return assignments
+    
+  
