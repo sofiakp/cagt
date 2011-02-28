@@ -24,7 +24,7 @@ def make_all_html_views(profiles_info_list, do_gene_proximity=False):
       write_sets(clustering_info, do_gene_proximity)
     except Exception,error:
       logging.error("Hit error while making html")
-      logging.error("profiles_info: %s", str(clustering_info.profiles_info))
+      logging.error("profiles_info: %s", str(profiles_info))
       logging.error(traceback.format_exc())
       print "HIT ERROR WHILE MAKING HTML"
       traceback.print_exc()
