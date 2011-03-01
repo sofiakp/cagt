@@ -46,6 +46,10 @@ npass = 1
 # distribution which sometimes makes the clustering more stable.
 use_kmeans_plus_plus = False
 
+# (In development -- not recommended)
+# This smooths the data before computing correlation.
+use_smoothed_correlation = False
+
 # Not used yet
 mutual_information_cutoff = 1
 

@@ -11,6 +11,8 @@ import sys
 sys.path.append('../../')
 from random import randrange
 from copy import deepcopy
+import logging
+import traceback
 
 from Pycluster import kcluster
 from numpy import corrcoef
@@ -55,6 +57,24 @@ def k_cluster(data, num_clusters, npass=npass, dist='c'):
   assert(len(data.ids) > 0)
   if len(data.ids) < num_clusters:
     return range(data.shape[0])
+  
+  if use_smoothed_correlation:
+    try:
+      # 5-value averaging
+      smoothed = np.zeros(shape=data.data.shape)
+      smoothed[:-2] += .15*data.data[2:]
+      smoothed[:-1] += .2*data.data[1:]
+      smoothed += .3*data.data
+      smoothed[1:] += .2*data.data[:-1]
+      smoothed[2:] += .15*data.data[:-2]
+      data.data = smoothed
+    except:
+      print "Error when smoothing data; continuing without smoothing"
+      logging.error("Error when smoothing data; continuing without smoothing")
+      logging.error(str(error))
+  		logging.error(traceback.format_exc())
+  		traceback.print_exc()
+  		
   
   if use_kmeans_plus_plus:
     kmeanspp_assignment = kmeansPP(data, num_clusters)
