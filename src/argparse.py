@@ -1139,6 +1139,8 @@ class FileType(object):
         # all other arguments are used as file names
         try:
             return open(string, self._mode, self._bufsize)
+        except:
+            pass
 
 
 
