@@ -8,11 +8,11 @@
 #####################################################################
 
 import sys
+import os
 sys.path.append(os.path.abspath(__file__))
 
 from time import time
 import pickle
-import os
 import logging
 
 try:
