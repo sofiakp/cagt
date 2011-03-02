@@ -40,7 +40,10 @@ make_horizontal_line_at_origin = False, make_vertical_line_in_middle = True):
 	if filename is not None:
 		r['png'](file=filename)
 
-	num_flipped = 0 if flipped is None else len(flipped) 
+  if flipped is None:
+    num_flipped = 0
+  else:
+    num_flipped = len(flipped)
 	if num_flipped != 0:
 		title += " ("+str(num_flipped)+" flipped)"
 
