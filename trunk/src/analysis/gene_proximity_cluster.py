@@ -83,7 +83,10 @@ def proximity_cluster(clustering_info):
       # gene_type = genes[chr][g]['type']
       if pos >= gene_upstream_end and pos <= gene_downstream_end:
         return INSIDE_GENE
-      gene_start = gene_upstream_end if strand=="+" else gene_downstream_end
+      if strand=="+":
+        gene_start = gene_upstream_end
+      else: 
+        gene_start = gene_downstream_end
       if abs(pos - gene_start) < nearest_gene_distance:
         nearest_gene_index = g
         nearest_gene_distance = abs(pos - gene_start)
