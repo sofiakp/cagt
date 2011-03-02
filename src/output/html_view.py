@@ -12,6 +12,11 @@ from src.filenames import *
 from src.ClusteringInfo.ClusteringInfo import *
 from src.analysis.gene_proximity_cluster import *
 
+def write_members_list_to_file(assignments, filename):
+  f = open(filename,"w")
+  f.write(reduce(lambda x,y: x+"\n"+y,map(str, assignments),""))
+  f.close()
+
 def make_all_html_views(profiles_info_list, do_gene_proximity=False):
   t0 = time()
   if not os.path.isdir(make_html_views_foldername(profiles_info_list[0].output_folder)):
@@ -65,6 +70,7 @@ def make_html_clustering_view(clustering_info):
   f = open(filename, "w")
   
   
+  
   f.write('<html>')
   f.write('<body>')
   f.write('<h1>'+signal_tag+' around '+peak_tag+'</h1>')
@@ -74,6 +80,12 @@ def make_html_clustering_view(clustering_info):
   f.write('Signal filename:'+profiles_info.signal_filename)
   f.write('<br>')
   f.write('Cell line:'+profiles_info.cell_line)
+  f.write('<br>')
+  
+  flipped_members_filename = make_filename(profiles_info, 'members', 'flipped')
+  write_members_list(clustering_info.flipped, flipped_members_filename)
+  
+  f.write('<a href=%s>Click here for a list of which profiles are flipped...</a>' % flipped_members_filename)
   f.write('<br>')
   f.write('<h2>All profiles:</h2>')
   f.write('<br>')
@@ -173,11 +185,8 @@ def make_html_set_view(clustering_info, members, type_of_data, shape_number=None
   
   
 
+
 def write_sets(clustering_info, do_gene_proximity=False):
-  def write_members_list_to_file(assignments, filename):
-    f = open(filename,"w")
-    f.write(reduce(lambda x,y: x+"\n"+y,map(str, assignments),""))
-    f.close()
 
   profiles_info = clustering_info.profiles_info
   peak_tag = profiles_info.peak_tag
