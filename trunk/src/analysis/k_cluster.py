@@ -24,6 +24,7 @@ from parameters import *
 #   ret = corrcoef(x,y)[0,1]
 #   return float(ret)
 
+
 # From http://yongsun.me/tag/python/
 def kmeansPP(data, k):  
     'init k seeds according to kmeans++'  
@@ -44,6 +45,9 @@ def kmeansPP(data, k):
         
     # Compute assignments based on the centers
     assignments = np.argmin( distance_matrix[:,centers], axis=1)
+    for i in range(len(centers)):
+      assignments[centers[i]] = i
+      
     return deepcopy(list(assignments.flat))
     
 
@@ -55,7 +59,7 @@ def kmeansPP(data, k):
 def k_cluster(data, num_clusters, npass=npass, dist='c'):
   # It doesn't make sense to cluster less than nclusters profiles
   assert(len(data.ids) > 0)
-  if len(data.ids) < num_clusters:
+  if len(data.ids) <= num_clusters:
     return range(data.shape[0])
   
   if use_smoothed_correlation:
@@ -72,9 +76,9 @@ def k_cluster(data, num_clusters, npass=npass, dist='c'):
       print "Error when smoothing data; continuing without smoothing"
       logging.error("Error when smoothing data; continuing without smoothing")
       logging.error(str(error))
-  		logging.error(traceback.format_exc())
-  		traceback.print_exc()
-  		
+      logging.error(traceback.format_exc())
+      traceback.print_exc()
+      
   
   if use_kmeans_plus_plus:
     kmeanspp_assignment = kmeansPP(data, num_clusters)
