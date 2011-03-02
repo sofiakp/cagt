@@ -1140,6 +1140,8 @@ class FileType(object):
         try:
             return open(string, self._mode, self._bufsize)
 
+
+
     def __repr__(self):
         args = self._mode, self._bufsize
         args_str = ', '.join(repr(arg) for arg in args if arg != -1)
