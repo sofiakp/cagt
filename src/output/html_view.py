@@ -82,10 +82,9 @@ def make_html_clustering_view(clustering_info):
   f.write('Cell line:'+profiles_info.cell_line)
   f.write('<br>')
   
-  flipped_members_filename = make_filename(profiles_info, 'members', 'flipped')
-  write_members_list(clustering_info.flipped, flipped_members_filename)
+  write_members_list_to_file(clustering_info.flipped, make_filename(clustering_info.profiles_info, 'members', 'flipped'))
   
-  f.write('<a href=%s>Click here for a list of which profiles are flipped...</a>' % flipped_members_filename)
+  f.write('<a href=%s>Click here for a list of which profiles are flipped...</a>' % make_filename(profiles_info, 'members', 'flipped'))
   f.write('<br>')
   f.write('<h2>All profiles:</h2>')
   f.write('<br>')
