@@ -7,12 +7,12 @@
 # See cagt/readme.txt
 #####################################################################
 
+import sys
 sys.path.append(os.path.abspath(__file__))
 
 from time import time
 import pickle
 import os
-import sys
 import logging
 
 try:
