@@ -55,7 +55,7 @@ shape_number=None, group_number=None):
 	assert(file_type in ["boxplot", "members", "heatmap", "html_view"])
 	assert(type_of_data in ["summary", "all", "high_signal", "low_signal", "magnitude_group",\
 	"shape_cluster", "shape_cluster_unflipped","shape_cluster_oversegmented", "grouped_shape",\
-	"signal", "peak", "profiles"])
+	"signal", "peak", "profiles", "flipped"])
 	# if file_type == "html_view": assert(type_of_data in ["all","signal","peak","profiles"])
 	if file_type != "html_view": assert(type_of_data not in ["summary", "signal","peak","profiles"])
 
