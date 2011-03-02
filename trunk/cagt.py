@@ -54,8 +54,8 @@ if __name__ == '__main__':
 	parser.add_argument('-d', '--debug', action='store_true', default=False, help='Tells CAGT to run in debug mode (not recommended)')
 	parser.add_argument('output_dir', help="All CAGT's output goes here. Use a different output_dir for each run")
 	parser.add_argument('profiles_list_filename', help="Path to a file in the profiles_list format (see FILE_FORMATS.TXT)")
-
 	args = parser.parse_args(sys.argv[1:])
+
 	args.output_dir = os.path.normpath(args.output_dir)
 	output_folder = args.output_dir
 	print "Outputting to folder: %s" % output_folder
@@ -68,7 +68,7 @@ if __name__ == '__main__':
 	logging.info("Starting CAGT")
 	logging.info("args = %s", str(args))
 
-	if not os.listdir(args.output_dir) == []:
+	if len(os.listdir(args.output_dir)) > 1:
 		print "Picking up from where the last run left off..."
 		print "(Pick a different output directory to start fresh)"
 		logging.info("Picking up from the last run")
@@ -120,7 +120,6 @@ if __name__ == '__main__':
 
 	
 	if args.make_html:
-		print "Making html..."
 		logging.info("making html...")
 		t_html = time()
 		make_all_html_views(profiles_info_list, do_gene_proximity)
