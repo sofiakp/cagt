@@ -7,11 +7,12 @@
 # See cagt/readme.txt
 #####################################################################
 
+sys.path.append(os.path.abspath(__file__))
+
 from time import time
 import pickle
 import os
 import sys
-import argparse
 import logging
 
 try:
@@ -43,7 +44,6 @@ def log_profiles_info(profiles_info):
 if __name__ == '__main__':
 	t0 = time()
 	
-	sys.path.append(os.path.abspath(__file__))
 	
 	# Parse command-line arguments
 	parser = argparse.ArgumentParser(description="The CAGT tool for clustering histone shape")
