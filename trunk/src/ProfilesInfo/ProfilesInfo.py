@@ -15,7 +15,10 @@ class ProfileInfo:
 		self.signal_filename = os.path.basename(entries[5])
 		self.ylims = map(float, entries[6].split(','))
 		assert(len(self.ylims)==2)
-		self.flip = bool(entries[7])
+		if entries[7] in ["True","true","T","t","1","y","Y","yes","Yes"]:
+		  self.flip = True
+		else:
+		  self.flip = False
 		self.bin_size = int(entries[8])
 		self.low_signal_cutoff_value = float(entries[9])
 		
