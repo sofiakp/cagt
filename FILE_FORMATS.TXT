@@ -6,7 +6,7 @@
 
 Specification of file formats:
 
-Profiles file (bed3+ format):
+CAGT data format:
 -----------------------------------------------
 chr	start	stop	val1,val2,...,valN
 

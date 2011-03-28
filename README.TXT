@@ -41,17 +41,16 @@ Run $ python cagt.py --help for a help message describing the modes.
 Libraries:
 --------------------------------
 CAGT requires these libraries:
-python 2.7 or higher
 scipy - http://www.scipy.org/
 Pycluster - http://bonsai.hgc.jp/~mdehoon/software/cluster/software.htm
 rpy2 - http://rpy.sourceforge.net/rpy2.html
 
 
-Profiles file format:
+CAGT data format:
 --------------------------------
 The profiles files should be named <signal_tag>_around_<peak_tag>.bed3, and they should have the following format:
 chr1<tab>start<tab>stop<tab>val1,val2,...,valN
 
-A sample profiles file can be found at:
+A sample cagt file can be found at:
 http://cagt.googlecode.com/files/H3K4me3_around_P300.bed3
 
