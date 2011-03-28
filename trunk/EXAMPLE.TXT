@@ -37,12 +37,12 @@ svn checkout https://cagt.googlecode.com/svn/trunk/ cagt
 
 Profile files
 ---------------------------------------
-Next we'll get a sample profiles file.
+Next we'll get a sample cagt file.
 We'll run these commands:
 
 mkdir cagt/data/
 cd cagt/data/
-wget http://cagt.googlecode.com/files/H3K4me3_around_P300.bed3
+wget http://cagt.googlecode.com/files/H3K4me3_around_P300.cagt
 cd ../..
 
 
@@ -50,7 +50,7 @@ Profiles list file
 ---------------------------------------
 Next we'll create a profiles list file.  Since we only have one profiles list file, it will have just one line:
 
-/path/to/H3K4me3_around_P300.bed3	P300	H3K4me3	K562	P300_peaks.bed	H3K4me3_signal.bedgraph	0,10	True	10	1
+/path/to/H3K4me3_around_P300.cagt	P300	H3K4me3	K562	P300_peaks.bed	H3K4me3_signal.bedgraph	0,10	True	10	1
 
 
 Running CAGT
