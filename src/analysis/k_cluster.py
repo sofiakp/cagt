@@ -26,43 +26,43 @@ from parameters import *
 
 
 # From http://yongsun.me/tag/python/
-def kmeansPP(data, k):  
-    'init k seeds according to kmeans++'  
+def kmeansPP(data, k):
+    'init k seeds according to kmeans++'
     X = data.data
     n = len(data.ids)
-    'choose the 1st seed randomly, and store D(x)^2 in D[]'  
-    centers = [randrange(n)]  
+    'choose the 1st seed randomly, and store D(x)^2 in D[]'
+    centers = [randrange(n)]
     distance_matrix = corrcoef(X)+1
     D = distance_matrix[centers[0],:]
     for _ in range(k-1):
-        bestDsum = bestIdx = -1  
-        for i in range(n):  
-            Dsum = np.sum( np.minimum(D, distance_matrix[i,:]) )  
+        bestDsum = bestIdx = -1
+        for i in range(n):
+            Dsum = np.sum( np.minimum(D, distance_matrix[i,:]) )
             if bestIdx < 0 or Dsum < bestDsum:
-              bestDsum, bestIdx = Dsum, i  
-        centers.append(bestIdx)  
+              bestDsum, bestIdx = Dsum, i
+        centers.append(bestIdx)
         D = np.minimum(D, distance_matrix[bestIdx,:])
-        
+
     # Compute assignments based on the centers
     assignments = np.argmin( distance_matrix[:,centers], axis=1)
     for i in range(len(centers)):
       assignments[centers[i]] = i
-      
+
     return deepcopy(list(assignments.flat))
-    
+
 
 #######################################################################
 # k_cluster()
 # -----------------------------------------------
 # Simple wrapper on the kcluster function
 #######################################################################
-def k_cluster(data, num_clusters, npass=npass, dist='c'):
+def k_cluster(data, num_clusters, npass, args, dist='c'):
   # It doesn't make sense to cluster less than nclusters profiles
   assert(len(data.ids) > 0)
   if len(data.ids) <= num_clusters:
     return range(data.shape[0])
-  
-  if use_smoothed_correlation:
+
+  if args.use_smoothed_correlation:
     try:
       # 5-value averaging
       smoothed = np.zeros(shape=data.data.shape)
@@ -78,16 +78,16 @@ def k_cluster(data, num_clusters, npass=npass, dist='c'):
       logging.error(str(error))
       logging.error(traceback.format_exc())
       traceback.print_exc()
-      
-  
-  if use_kmeans_plus_plus:
+
+
+  if args.use_kmeans_plus_plus:
     kmeanspp_assignment = kmeansPP(data, num_clusters)
-    assignments, error, nfound = kcluster(data.data, nclusters=num_clusters, 
+    assignments, error, nfound = kcluster(data.data, nclusters=num_clusters,
     method='m', dist=dist, npass=npass, initialid=kmeanspp_assignment)
   else:
-    assignments, error, nfound = kcluster(data.data, nclusters=num_clusters, 
+    assignments, error, nfound = kcluster(data.data, nclusters=num_clusters,
     method='m', dist=dist, npass=npass)
-  
+
   # It happens occasionally that one of the clusters is empty
   # In that case, we'll remap the assignments so that there aren't
   # any gaps in the cluster numbers
@@ -97,7 +97,7 @@ def k_cluster(data, num_clusters, npass=npass, dist='c'):
     for i in range(len(allocated_numbers)):
       reverse_map[allocated_numbers[i]] = i
     assignments = map(lambda x: reverse_map[x], allocated_numbers)
-  
+
   return assignments
-    
-  
+
+

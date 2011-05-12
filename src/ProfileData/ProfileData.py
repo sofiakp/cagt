@@ -31,7 +31,7 @@ def make_ProfileData(profile_info, clustering_info):
 		data, peaks = read_profiles_file(profile_info.filename)
 		low_signal_cutoff_value = profile_info.low_signal_cutoff_value
 	num_peaks = len(peaks)
-	low_signal_ids = get_low_signal_profiles(data, low_signal_cutoff_value)
+	low_signal_ids = get_low_signal_profiles(data, low_signal_cutoff_value, profile_info.args.low_signal_cutoff_quantile)
 	high_signal_ids = opposite_ids(low_signal_ids, data.ids)
 	PD = ProfileData(profile_info, clustering_info, data, low_signal_ids, high_signal_ids)
 	return PD, peaks, num_peaks, low_signal_ids, high_signal_ids
@@ -42,7 +42,7 @@ class ProfileData:
 		# self.peak_tag = peak_tag
 		# self.signal_tag = signal_tag
 		self.clustering_info = clustering_info
-		
+
 		# profiles_filename = make_profiles_filename(peak_tag, signal_tag)
 		# profiles_filename = profile_info.filename
 
@@ -50,10 +50,10 @@ class ProfileData:
 		self.low_signal_data = data.get_rows(low_signal_ids)
 		self.high_signal_data = data.get_rows(high_signal_ids)
 		self.high_signal_norm_data = normalize(self.high_signal_data)
-		
-		
-	
-	
-	
-	
-	
+
+
+
+
+
+
+

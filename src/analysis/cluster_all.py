@@ -4,7 +4,6 @@ import os
 import logging
 import traceback
 
-from parameters import *
 from src.filenames import *
 from src.ClusteringInfo.ClusteringInfo import *
 from src.analysis.group_by_magnitude import group_by_magnitude
@@ -51,7 +50,7 @@ def cluster_profile_pair(profiles_info_pair):
 		clustering_info_dump(clustering_info)
 	except Exception,error:
 		print "HIT ERROR:", error, " WHILE CLUSTERING", profiles_info, " -- SKIPPING"
-	
+
 
 # def cluster_all(profiles_info_list):
 # 	for profiles_info in profiles_info_list:

@@ -4,7 +4,6 @@ sys.path.append('../../')
 import gzip
 import pickle
 
-from parameters import *
 from src.filenames import *
 
 GENE_DISTAL = 0
@@ -41,7 +40,7 @@ def get_genes_from_gencode_file(output_folder, gene_list_filename):
       if not genes.has_key(chr):
         genes[chr] = []
       genes[chr].append(entry)
-    
+
     genes['total_num_bases'] += entry['end'] - entry['start']
     genes['num_genes'] += 1
     if entry['strand'] == '+':
@@ -51,8 +50,8 @@ def get_genes_from_gencode_file(output_folder, gene_list_filename):
     else:
       print entry['strand']
       raise Exception("something went wrong here")
-    
-    
+
+
   genes_filename = make_genes_filename(output_folder)
   pickle.dump(genes, open(genes_filename,"w"))
   # return gencode_genes
@@ -60,17 +59,19 @@ def get_genes_from_gencode_file(output_folder, gene_list_filename):
 
 def proximity_cluster(clustering_info):
   profiles_info = clustering_info.profiles_info
-  
+  genome_length = profiles_info.args.genome_length
+  gene_proximity_distance = profiles_info.args.gene_proximity_distance
+
   peaks = clustering_info.peaks
-    
+
   genes_filename = make_genes_filename(profiles_info.output_folder)
   genes = pickle.load(open(genes_filename, "r"))
-    
-  
+
+
   def find_gene_proximity(p):
     chr = peaks[p][0]
     pos = peaks[p][1]
-    
+
     nearest_gene_index = -1
     nearest_gene_distance = float("infinity")
     nearest_gene_strand = "+"
@@ -85,7 +86,7 @@ def proximity_cluster(clustering_info):
         return INSIDE_GENE
       if strand=="+":
         gene_start = gene_upstream_end
-      else: 
+      else:
         gene_start = gene_downstream_end
       if abs(pos - gene_start) < nearest_gene_distance:
         nearest_gene_index = g
@@ -99,13 +100,13 @@ def proximity_cluster(clustering_info):
       return UPSTREAM_NEG
     else:
       raise "something went wrong here"
-  
+
   gene_proximity_assignments = map(find_gene_proximity, range(len(peaks)))
-  
+
   # clusters = {GENE_DISTAL: [], INSIDE_GENE: [], UPSTREAM_POS: [], UPSTREAM_NEG: []}
   # for i in range(len(peaks)):
   #   clusters[gene_proximity_assignments[i]].append(i)
-  
+
   # print genes['total_num_bases']
   # print genes['num_genes']
   # print genes['num_pos_genes']
@@ -115,7 +116,7 @@ def proximity_cluster(clustering_info):
   expected[UPSTREAM_POS] = float(genes['num_pos_genes']*gene_proximity_distance)/genome_length
   expected[UPSTREAM_NEG] = float(genes['num_neg_genes']*gene_proximity_distance)/genome_length
   expected[GENE_DISTAL] = 1 - expected[INSIDE_GENE] - expected[UPSTREAM_POS] - expected[UPSTREAM_NEG]
-  
+
   # print "set(gene_proximity_assignments):", set(gene_proximity_assignments)
   # counts_list = map(lambda t: [t,len(filter(lambda a: a==t, gene_proximity_assignments))] , list(set(gene_proximity_assignments)))
   # counts = {GENE_DISTAL: 0, INSIDE_GENE: 0, UPSTREAM_POS: 0, UPSTREAM_NEG: 0}
@@ -134,21 +135,21 @@ def proximity_cluster(clustering_info):
 
 # def gene_proximity_cluster_all(clustering_info):
 #   proximity_assignments = {}
-# 
+#
 #   print "getting gencode genes..."
 #   t0 = time()
 # # gencode_genes = get_genes_from_gencode_file()
 # # pickle.dump(gencode_genes, open("tmp/tmp_gencode_genes","w"))
 #   gencode_genes = pickle.load(open("tmp/tmp_gencode_genes","r"))
 #   print "time to get gencode genes:", time()-t0
-# 
+#
 #   print "total bp covered by gencode genes:", sum(map(lambda chr: sum(map(lambda entry: entry["end"]-entry["start"], gencode_genes[chr])), gencode_genes.keys()))
-# 
+#
 #   for peak_tag in peak_tags:
 #     print "starting", peak_tag, "..."
 #     proximity_assignments[peak_tag] = proximity_cluster(clustering_info, peak_tag, gencode_genes)
 #   return proximity_assignments
-# 
+#
 
 
 

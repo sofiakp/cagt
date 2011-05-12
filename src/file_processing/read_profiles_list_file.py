@@ -1,11 +1,11 @@
 
 from src.ProfilesInfo.ProfilesInfo import *
 
-def read_profiles_list_file(filename, output_id):
+def read_profiles_list_file(filename, output_id, args):
 	f = open(filename,"r")
 	profiles = []
 	for line in f:
-		profiles.append(ProfileInfo(line, output_id))
+		profiles.append(ProfileInfo(line, output_id, args))
 		# line = line.split()
 		# entry = {}
 		# entry["filename"] = line[0]
@@ -19,4 +19,4 @@ def read_profiles_list_file(filename, output_id):
 		# entry["bin_size"] = line[8]
 		# profiles.append(entry)
 	return profiles
-		
+

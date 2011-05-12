@@ -2,7 +2,6 @@
 import sys
 sys.path.append("../../")
 
-from parameters import *
 from src.filenames import *
 
 def read_assignments(cluster_type, peak_tag, signal_tag):

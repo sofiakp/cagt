@@ -5,7 +5,6 @@ import sys
 import logging
 import traceback
 
-from parameters import *
 from src.filenames import *
 from src.output.boxplot_simple import boxplot_simple
 from src.ClusteringInfo.ClusteringInfo import clustering_info_load
@@ -43,14 +42,14 @@ def make_plots_for_pair(clustering_info):
 #		print "making folder:", make_aggregation_plots_foldername(peak_tag, signal_tag, clustering_info.output_id)
 		# os.mkdir(make_aggregation_plots_foldername(peak_tag, signal_tag, clustering_info.output_id))
 		# assert(os.path.isdir(make_aggregation_plots_foldername(peak_tag, signal_tag, clustering_info.output_id)))
-	
+
 	boxplot_simple(clustering_info, "all")
 	boxplot_simple(clustering_info, "low_signal")
 	boxplot_simple(clustering_info, "high_signal")
 	shape_clusters = range(len(clustering_info.shape_clusters))
 	shape_clusters_unflipped = range(len(clustering_info.shape_clusters_unflipped))
 	shape_clusters_oversegmented = range(len(clustering_info.shape_clusters_oversegmented))
-		
+
 	group_clusters = range(len(clustering_info.group_clusters))
 	for shape_cluster in shape_clusters:
 		boxplot_simple(clustering_info, "shape_cluster", shape_number=shape_cluster)
@@ -63,4 +62,4 @@ def make_plots_for_pair(clustering_info):
 		boxplot_simple(clustering_info, "shape_cluster_unflipped", shape_number=shape_cluster)
 	for shape_cluster in shape_clusters_oversegmented:
 		boxplot_simple(clustering_info, "shape_cluster_oversegmented", shape_number=shape_cluster)
-			
+
