@@ -3,9 +3,9 @@
 # boxplot_simple.py
 # ---------------------------------------------------------
 # boxplot_simple is designed to be a simple interface for making
-# boxplots.  It takes a "type" argument (cluster_type), and 
+# boxplots.  It takes a "type" argument (cluster_type), and
 # passes different arguments to boxplot() based on the type.
-# In general, if you want to make a new kind of plot, add another 
+# In general, if you want to make a new kind of plot, add another
 # supported "type" argument.
 #####################################################################
 
@@ -13,13 +13,13 @@ import logging
 import traceback
 
 from rpy_matrix_conversion import *
-from parameters import *
 from src.filenames import *
 from src.utils import index_r_data
 from src.output.make_dimnames import make_dimnames
 from src.output.boxplot import boxplot
 
 def get_group_bounds(clustering_info, group_number):
+	num_groups = clustering_info.profiles_info.args.num_groups
 	group_cutoffs = clustering_info.group_cutoffs
 	if group_number == 0:
 		group_lower_bound = "0"
@@ -33,13 +33,16 @@ def get_group_bounds(clustering_info, group_number):
 
 
 def boxplot_simple(clustering_info, cluster_type, shape_number=None, group_number=None):
-	
+
 	profiles_info = clustering_info.profiles_info
 	peak_tag = profiles_info.peak_tag
 	signal_tag = profiles_info.signal_tag
 
 	# output_id = clustering_info.output_id
-
+	args = clustering_info.profiles_info.args
+	num_groups = args.num_groups
+	group_by_quantile = args.group_by_quantile
+	normalize_ylims = [args.normalize_lower_ylim, args.normalize_upper_ylim]
 	# ids
 	if cluster_type == "all":
 		ids = clustering_info.ids
@@ -66,12 +69,12 @@ def boxplot_simple(clustering_info, cluster_type, shape_number=None, group_numbe
 		flipped = list(set(ids) & set(clustering_info.flipped))
 	else:
 		flipped = None
-	
-	
+
+
 	if len(ids) < 4:
 		# too few profiles to plot
 		return
-	
+
 	if cluster_type in ["magnitude_group", "grouped_shape"]:
 		# Find cutoffs for this group
 		group_lower_bound, group_upper_bound = get_group_bounds(clustering_info, group_number)
@@ -82,7 +85,7 @@ def boxplot_simple(clustering_info, cluster_type, shape_number=None, group_numbe
 	elif cluster_type == "low_signal":
 		title="Low signal profiles: "+str(len(ids))+" profiles"
 	elif cluster_type == "high_signal":
-		title="High signal profiles: "+str(len(ids))+" profiles"		
+		title="High signal profiles: "+str(len(ids))+" profiles"
 	elif cluster_type == "magnitude_group":
 		title="Profiles with "+ str(int(group_by_quantile*100))+\
 		"% quantile in the range "+group_lower_bound+"-"+group_upper_bound+\
@@ -124,7 +127,7 @@ def boxplot_simple(clustering_info, cluster_type, shape_number=None, group_numbe
 	except Exception, error:
 		logging.error("Hit error while making boxplot")
 		logging.error("profiles_info: %s", str(clustering_info.profiles_info))
-		logging.error("boxplot_simple arguments: cluster_type=%s ; shape_number=%s ; group_number=%s", 
+		logging.error("boxplot_simple arguments: cluster_type=%s ; shape_number=%s ; group_number=%s",
 		cluster_type, str(shape_number), str(group_number))
 		logging.error(str(error))
 		logging.error(traceback.format_exc())
@@ -132,8 +135,8 @@ def boxplot_simple(clustering_info, cluster_type, shape_number=None, group_numbe
 		traceback.print_exc()
 		print "Skipping this plot"
 		print "See logs for details"
-		
+
 
 	return
 
-	
+

@@ -5,7 +5,7 @@
 # a clustering of profiles.  This approach was chosen because
 # almost all the choices that are made in clustering need to
 # be referred to again when plotting clusters, and it becomes unweildy
-# to pass them around separately.  
+# to pass them around separately.
 #########################################################
 
 
@@ -13,7 +13,6 @@ import sys
 import pickle
 import os
 
-from parameters import *
 from src.filenames import *
 from src.ProfileData.ProfileData import make_ProfileData
 from src.file_processing.compute_signal_ylims import compute_signal_ylims
@@ -45,13 +44,13 @@ class ClusteringInfo:
     # if self.PDs[peak_tag].has_key(signal_tag):
     #   return
     # self.PDs[peak_tag][signal_tag] = ProfileData(self, peak_tag, signal_tag)
-  
+
   def free_PD(self):
     del self.PD
     self.PD = None
-  
-  
-  
+
+
+
 def clustering_info_dump(clustering_info):
   if not os.path.isdir(make_profiles_foldername(clustering_info.profiles_info)):
     os.mkdir(make_profiles_foldername(clustering_info.profiles_info))
@@ -64,5 +63,5 @@ def clustering_info_delete(profiles_info):
   filename = make_clustering_info_dump_filename(profiles_info)
   if os.path.isfile(filename):
     os.remove(filename)
-  
-    
+
+

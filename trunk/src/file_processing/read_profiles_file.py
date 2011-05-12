@@ -32,6 +32,7 @@ r = rpy.r
 # Also creates dimnames for the data.
 #######################################################################
 
+global made_converting_NaNs_warning
 made_converting_NaNs_warning = False
 
 def convert_to_float(x):
@@ -63,14 +64,14 @@ def read_profiles_file(filename):
 		peaks.append([chr, (start+stop)/2])
 		vals = array.array('f', map(convert_to_float, line.split()[3].split(',')))
 		raw_data.append(vals)
-	
+
 #	data = np.matrix(raw_data)
 	data = np.array(raw_data)
 	ids = range(len(peaks))
 	data = MatrixMap(data, ids)
-	
+
 	return data, peaks
-	
+
 
 
 
