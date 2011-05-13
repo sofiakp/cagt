@@ -14,7 +14,7 @@ sys.path.append('../../')
 
 import random
 import array
-from math import log
+from math import log, isnan
 import numpy as np
 
 from src.utils import MatrixMap
@@ -38,7 +38,7 @@ made_converting_NaNs_warning = False
 def convert_to_float(x):
   try:
     ret = float(x)
-    if ret == float('NaN'):
+    if isnan(ret):
       if not made_converting_NaNs_warning:
         logging.warning('Converting NaNs to 0s')
         global made_converting_NaNs_warning
