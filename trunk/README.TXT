@@ -41,9 +41,31 @@ Run $ python cagt.py --help for a help message describing the modes.
 Libraries:
 --------------------------------
 CAGT requires these libraries:
-scipy - http://www.scipy.org/
-Pycluster - http://bonsai.hgc.jp/~mdehoon/software/cluster/software.htm
-rpy2 - http://rpy.sourceforge.net/rpy2.html
+scipy: 
+home - http://www.scipy.org/
+source - http://sourceforge.net/projects/scipy/files/scipy/0.9.0/scipy-0.9.0.tar.gz/download
+
+Pycluster:
+home - http://bonsai.hgc.jp/~mdehoon/software/cluster/software.htm
+source - http://bonsai.hgc.jp/~mdehoon/software/cluster/Pycluster-1.50.tar.gz
+
+rpy2:
+home - http://rpy.sourceforge.net/rpy2.html
+source - http://sourceforge.net/projects/rpy/files/rpy2/2.1.x/rpy2-2.1.8.tar.gz/download
+using easy_install - type: easy_install rpy2
+
+All of these packages use python's standardized "distutils" install script.  In the source directory, just type:
+python setup.py install
+
+If you don't have root access, you can tell distutils to install the module in your home directory instead.  Instead type:
+python setup.py install --home=<dir>
+You may also have to add <home>/lib/python to your python path.  Type:
+export PYTHONPATH="<homedir>:${PYTHONPATH}"
+
+See this link for more info about using distutils without root access:
+http://docs.python.org/install/index.html#alternate-installation-the-home-scheme
+
+
 
 
 CAGT data format:
