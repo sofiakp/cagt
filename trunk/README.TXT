@@ -38,6 +38,10 @@ Run $ python cagt.py --help for a help message describing the modes.
 Libraries:
 --------------------------------
 CAGT requires these libraries:
+numpy:
+home - http://numpy.scipy.org/
+source - http://sourceforge.net/projects/numpy/files/NumPy/1.6.0/numpy-1.6.0.tar.gz/download
+
 scipy: 
 home - http://www.scipy.org/
 source - http://sourceforge.net/projects/scipy/files/scipy/0.9.0/scipy-0.9.0.tar.gz/download
