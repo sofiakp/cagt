@@ -12,31 +12,28 @@ Some terminology:
 --------------------------------
 CAGT uses two basic types of data:  peak data (i.e. transcription factor binding sites) and signal data (i.e. histone mark ChIP-seq fold change signal).  
 
-To simplify display, each peak and signal track respectively is referred to with a unique "tag".  We call the signal around a peak a "profile".  
-
 
 Instructions for using CAGT:
 --------------------------------
 0) Install the necessary libraries (see the Libraries section below)
 
-1) Generate a profiles list file according to the format in FILE_FORMATS.TXT
+1) Generate a profiles list file according to the format in FILE_FORMATS.txt.  This defines the set of profiles CAGT will run on.
 
-2) Specify histone_profiles_path and profiles_list_filename in parameters.py
+2) Run CAGT from the command line with 
+> python cagt.py <output folder> <profiles list file> <options> <mode>
 
-3) Run CAGT from the command line with 
-> python cagt.py <output folder> <profiles list file> <mode>
+output folder:  CAGT will put all its output in this folder.  You should specify a different output folder for each run of CAGT.  There's no need to create the folder first; CAGT will create it if it doesn't already exist.  
 
-output_folder:  CAGT will put all its output in this folder.  You should specify a different output folder for each run of CAGT.  There's no need to create the folder first; CAGT will create it if it doesn't already exist.  
+options: Type python cagt.py --help to see the list of all set-able parameters, as well as what each one does. 
 
 mode: CAGT has four modes: "--cluster", "--make-plots" and "--make-html".  You can specify one or many modes; if you specify many modes, they run sequentially. They must be run in the following order: cluster > make-plots > make-html, but you can run one mode, let it finish, then run another mode; all the relevant data is saved after each mode completes.
-
 - In "cluster" mode, CAGT clusters each set of profiles and puts the results in output_folder/clustering_info.pickle.
 - In "make-plots" mode, CAGT makes aggregation plots for each peak_tag-signal_tag pair, and puts them in their own folder in output_folder.
 - In "make-html" mode, CAGT makes an html view of the plots, and puts a file called "html_view.html" in output_folder (and also produces a number of supporting html pages).  Viewing html_view.html in a browser is an easy way to view the results.
 
 Run $ python cagt.py --help for a help message describing the modes.
 
-4) The results of the run are placed in output_folder. Open html_view.html in a browser for an easy-to-navigate view of the results.
+3) The results of the run are placed in output_folder. Open html_view.html in a browser for an easy-to-navigate view of the results.
 
 Libraries:
 --------------------------------
