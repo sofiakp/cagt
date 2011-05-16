@@ -28,7 +28,6 @@ matplotlib-1.0.0.tar.gz/download ; tar -xvf matplotlib-1.0.0.tar.gz ; cd matplot
 python setup.py install ; cd ..
 wget http://motifzone.net/files/public_downloads/openmotif/2.3/stable/openmotif-2.3.0-1.fc8.x86_64.rpm ; yum -y --nogpgcheck install openmotif-2.3.0-1.fc8.x86_64.rpm
 wget http://bonsai.hgc.jp/~mdehoon/software/cluster/cluster-1.49.tar.gz ; tar -xvf cluster-1.49.tar.gz ; cd cluster-1.49 ; ./configure ; python setup.py install ; cd ..
-#wget http://bedtools.googlecode.com/files/BEDTools.v2.9.0.tar.gz ;  tar -xvf BEDTools.v2.9.0.tar.gz  ; cd BEDTools-Version-2.9.0 ; make ;  
 yum -y install R
 yum -y install rpy2
 cd ..
