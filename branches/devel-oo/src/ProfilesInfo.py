@@ -1,10 +1,11 @@
 import os
 
 class ProfileInfo:
-	def __init__(self, profile_info_str, output_folder):
+	def __init__(self, profile_info_str, output_folder, args):
 		self.output_folder = output_folder
+		self.args = args
 		self.from_str(profile_info_str)
-	
+
 	def from_str(self, str):
 		entries = str.split()
 		self.filename = entries[0]
@@ -21,13 +22,14 @@ class ProfileInfo:
 		  self.flip = False
 		self.bin_size = int(entries[8])
 		self.low_signal_cutoff_value = float(entries[9])
-		
+
 	def __str__(self):
 		return self.signal_tag + " around " + self.peak_tag + " in " + self.cell_line
 
 
 class ProfileInfoPair:
-	def __init__(self, clustering_info1, clustering_info2, entropy1, entropy2, mutual_entropy, mutual_information):
+	def __init__(self, clustering_info1, clustering_info2, entropy1, entropy2, mutual_entropy, mutual_information, args):
+		self.args = args
 		self.clustering_info1 = clustering_info1
 		self.clusteirng_info2 = clustering_info2
 		self.profiles_info1 = clustering_info1.profiles_info
@@ -42,6 +44,6 @@ class ProfileInfoPair:
 		self.bin_size = profiles_info1.bin_size
 		self.entropy1, self.entropy2, self.mutual_entropy, self.mutual_information =\
 		entropy1, entropy2, mutual_entropy, mutual_information
-		
-		
-		
+
+
+
