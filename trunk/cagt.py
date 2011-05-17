@@ -22,7 +22,6 @@ except ImportError:
 
 import logging
 
-from parameters import *
 from src.filenames import *
 from src.ClusteringInfo.ClusteringInfo import ClusteringInfo, clustering_info_dump, clustering_info_load
 from src.analysis.cluster_all import *
