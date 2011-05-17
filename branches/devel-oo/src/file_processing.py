@@ -10,7 +10,6 @@ import logging
 import rpy2.robjects as rpy
 r = rpy.r
 
-from parameters import *
 from src.filenames import *
 from src.utils import MatrixMap
 from src.ProfilesInfo.ProfilesInfo import *
@@ -97,7 +96,7 @@ def read_profiles_list_file(filename, output_id):
     return profiles
 
 
-def get_low_signal_profiles(data, low_signal_cutoff_value):
+def get_low_signal_profiles(data, low_signal_cutoff_value, low_signal_cutoff_quantile):
 	ncol = data.data.shape[1]
 	nrow = len(data.ids)
 	low_signal_rows = filter(\
