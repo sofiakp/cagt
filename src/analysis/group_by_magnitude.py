@@ -27,7 +27,7 @@ def group_by_magnitude(clustering_info):
 	data = clustering_info.PD.high_signal_data
 	if len(data.ids) < 5:
 		clustering_info.group_cutoffs = [0.0]*num_groups
-		clustering_info.group_clusters = [0]*len(data.ids)
+		clustering_info.group_clusters = assignments_to_clusters([0]*len(data.ids), data.ids)
 		return
 
 	quantiles = map(lambda id: quantile(np.array(data.get_row(id)), group_by_quantile),\

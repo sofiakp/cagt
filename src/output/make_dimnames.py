@@ -1,4 +1,3 @@
-from parameters import *
 
 def make_dimnames(clustering_info, ids):
 	space_between_colnames = clustering_info.profiles_info.args.space_between_colnames

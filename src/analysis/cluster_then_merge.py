@@ -17,9 +17,9 @@ def cluster_then_merge(clustering_info):
 	norm_data = clustering_info.PD.high_signal_norm_data
 	if len(norm_data.ids) < 5:
 		clustering_info.group_cutoffs = [0.0]*num_groups
-		clustering_info.shape_clusters = [0]*len(norm_data.ids)
-		clustering_info.shape_clusters_unflipped = [0]*len(norm_data.ids)
-		clustering_info.shape_clusters_oversegmented = [0]*len(norm_data.ids)
+		clustering_info.shape_clusters = assignments_to_clusters([0]*len(norm_data.ids), norm_data.ids)
+		clustering_info.shape_clusters_unflipped = assignments_to_clusters([0]*len(norm_data.ids), norm_data.ids)
+		clustering_info.shape_clusters_oversegmented = assignments_to_clusters([0]*len(norm_data.ids), norm_data.ids)
 		clustering_info.flipped = [False]*len(norm_data.ids)
 		return
 
