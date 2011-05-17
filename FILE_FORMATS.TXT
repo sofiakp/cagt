@@ -10,6 +10,15 @@ CAGT data format:
 -----------------------------------------------
 chr	start	stop	val1,val2,...,valN
 
+This file contains the signal values of the signal track around each peak region of interest.
+FORMAT: (tab delimited)
+Col1: chromosome name
+Col2: peak start coordinate (0-based)
+Col3: peak stop coordinate (1-based)
+Col4: comma separated list of signal values for a fixed length window around the peak summit (NOTE: the length of the window need not be the same as the peak width. However, it MUST be constant for all the peaks in the .cagt file)
+
+We generally recommend a window of +/-500 bp (i.e. a total of 1001 bps) around sites of interest such as TF ChIP-seq peak summits. You can run CAGT more efficiently, by subsampling within the1000 bp window i.e. you can simply sample every 10 bp within the 1000 bp window.
+
 Profiles list file:
 -----------------------------------------------
 profiles_file_absolute_path	peak_tag	signal_tag	cell_line	peak_original_filename	signal_original_filename	ylim_lower,ylim_upper	allow_profile_flipping?	number_of_bases_per_value	low_signal_cutoff_value
