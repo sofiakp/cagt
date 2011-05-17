@@ -19,8 +19,6 @@ from numpy import corrcoef
 import numpy as np
 
 from src.utils import *
-from src.analysis.k_cluster import k_cluster
-from src.analysis.hcluster import hcluster
 from src.filenames import *
 from src.ClusteringInfo.ClusteringInfo import *
 from src.analysis.group_by_magnitude import group_by_magnitude
@@ -34,7 +32,6 @@ from math import sqrt
 from copy import deepcopy
 
 
-from parameters import *
 from src.utils import get_assignment_indices
 
 
@@ -146,13 +143,13 @@ def kmeansPP(data, k):
 # -----------------------------------------------
 # Simple wrapper on the kcluster function
 #######################################################################
-def k_cluster(data, num_clusters, npass=npass, dist='c'):
+def k_cluster(data, num_clusters, npass, args, dist='c'):
     # It doesn't make sense to cluster less than nclusters profiles
     assert(len(data.ids) > 0)
     if len(data.ids) <= num_clusters:
         return range(data.shape[0])
 
-    if use_smoothed_correlation:
+    if args.use_smoothed_correlation:
         try:
             # 5-value averaging
             smoothed = np.zeros(shape=data.data.shape)
@@ -168,14 +165,14 @@ def k_cluster(data, num_clusters, npass=npass, dist='c'):
             logging.error(str(error))
             logging.error(traceback.format_exc())
             traceback.print_exc()
-
-    if use_kmeans_plus_plus:
+    if args.use_kmeans_plus_plus:
         kmeanspp_assignment = kmeansPP(data, num_clusters)
         assignments, error, nfound = kcluster(data.data, nclusters=num_clusters,
-                                              method='m', dist=dist, npass=npass, initialid=kmeanspp_assignment)
+        method='m', dist=dist, npass=npass, initialid=kmeanspp_assignment)
     else:
         assignments, error, nfound = kcluster(data.data, nclusters=num_clusters,
-                                              method='m', dist=dist, npass=npass)
+        method='m', dist=dist, npass=npass)
+
 
     # It happens occasionally that one of the clusters is empty
     # In that case, we'll remap the assignments so that there aren't
@@ -207,7 +204,8 @@ def correlation_with_flipping(profile1, profile2):
     return cors[0]
 
 
-def hcluster(norm_data, clusters, flipping=False):
+def hcluster(norm_data, clusters, args, flipping=False):
+    cluster_merge_correlation_cutoff = args.cluster_merge_correlation_cutoff
     t1 = time()
     # clusters = get_assignment_indices(clustering_assignments)
     cluster_medians = map(lambda ids: medians(norm_data.get_rows(ids)), clusters)
@@ -305,6 +303,12 @@ def assign_to_group(val, cutoffs):
 
 
 def group_by_magnitude(clustering_info):
+	num_groups = clustering_info.profiles_info.args.num_groups
+	group_by_quantile = clustering_info.profiles_info.args.group_by_quantile
+	group_quantile_bounds = [clustering_info.profiles_info.args.group_quantile_lower_bound, clustering_info.profiles_info.args.group_quantile_upper_bound]
+	group_quantile_lower_bound = clustering_info.profiles_info.args.group_quantile_lower_bound
+	group_quantile_upper_bound = clustering_info.profiles_info.args.group_quantile_upper_bound
+
     data = clustering_info.PD.high_signal_data
     if len(data.ids) < 5:
         clustering_info.group_cutoffs = [0.0]*num_groups

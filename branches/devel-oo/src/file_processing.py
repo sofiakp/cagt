@@ -36,6 +36,7 @@ def normalize(data):
 	return MatrixMap(norm_data, ids)
 
 
+global made_converting_NaNs_warning
 made_converting_NaNs_warning = False
 
 def convert_to_float(x):
@@ -76,11 +77,11 @@ def read_profiles_file(filename):
     return data, peaks
 
 
-def read_profiles_list_file(filename, output_id):
+def read_profiles_list_file(filename, output_id, args):
     f = open(filename,"r")
     profiles = []
     for line in f:
-        profiles.append(ProfileInfo(line, output_id))
+        profiles.append(ProfileInfo(line, output_id, args))
         # line = line.split()
         # entry = {}
         # entry["filename"] = line[0]

@@ -11,7 +11,6 @@ import sys
 import logging
 import traceback
 
-from parameters import *
 from src.filenames import *
 from src.output.boxplot_simple import boxplot_simple
 from src.ClusteringInfo.ClusteringInfo import clustering_info_load
