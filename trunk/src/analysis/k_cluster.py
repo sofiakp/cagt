@@ -18,7 +18,6 @@ from Pycluster import kcluster
 from numpy import corrcoef
 import numpy as np
 
-from parameters import *
 
 # def corr_dist(x,y):
 #   ret = corrcoef(x,y)[0,1]

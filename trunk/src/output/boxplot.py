@@ -15,7 +15,6 @@ import gc
 
 import sys
 
-from parameters import *
 from src.filenames import *
 from src.utils import *
 from src.output.make_dimnames import make_dimnames
