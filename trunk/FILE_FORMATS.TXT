@@ -12,7 +12,7 @@ chr	start	stop	val1,val2,...,valN
 
 This file contains the signal values of the signal track around each peak region of interest.
 FORMAT: (tab delimited)
-Col1: chromosome name
+Col1: peak chromosome name
 Col2: peak start coordinate (0-based)
 Col3: peak stop coordinate (1-based)
 Col4: comma separated list of signal values for a fixed length window around the peak summit (NOTE: the length of the window need not be the same as the peak width. However, it MUST be constant for all the peaks in the .cagt file)
