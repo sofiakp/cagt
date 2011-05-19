@@ -35,7 +35,29 @@ Run $ python cagt.py --help for a help message describing the modes.
 
 3) The results of the run are placed in output_folder. Open html_view.html in a browser for an easy-to-navigate view of the results.
 
+Detailed Options:
+---------------------
+usage: cagt.py [-h] [--cluster] [--make-plots] [--make-html]
+[--low_signal_cutoff_quantile LOW_SIGNAL_CUTOFF_QUANTILE]   Default: 0.9 (magnitude quantile to use to compare to low signal threshold)
 
+[--cluster_then_merge_num_clusters CLUSTER_THEN_MERGE_NUM_CLUSTERS]  Default: 40 (number of k-means preclusters before merging)
+
+[--cluster_merge_correlation_cutoff CLUSTER_MERGE_CORRELATION_CUTOFF]  Default: 0.6 (merge clusters whose average patterns correlate > this cutoff. Use a stricter threshold such as 0.8 if you want more granularity e.g. DNase data)
+
+[--num_groups NUM_GROUPS] Default: 4 Number of magnitude groups
+[--group_by_quantile GROUP_BY_QUANTILE]    Default: 0.9 (magnitude quantile to use to split profiles into magnitude groups)
+[--group_quantile_lower_bound GROUP_QUANTILE_LOWER_BOUND]  Default: 0.1 (lowest quantile to use for magnitude group splits)
+[--group_quantile_upper_bound GROUP_QUANTILE_UPPER_BOUND]  Default: 0.9 (highest quantile to use for magnitude group splits)
+
+[--npass NPASS] [--use_kmeans_plus_plus USE_KMEANS_PLUS_PLUS] Default: 1 (number of k-means passes. Set to a higher number for more robust results)  
+
+[--normalize_upper_ylim NORMALIZE_UPPER_YLIM] Default: 0 (minimum y-axis in magnitude plots)
+[--normalize_lower_ylim NORMALIZE_LOWER_YLIM] Default: 50 (maximum y-axis in magnitude plots)
+
+[--space_between_colnames SPACE_BETWEEN_COLNAMES]  Ignore
+
+output_dir profiles_list_filename
+ 
 Output:
 --------------------------------
 The easiest way to interact with CAGT's output is through the html views.  Use a browser to open the html_view_summary file in the output folder.  Note that you can click on any plot to view a list of its members' indices.
