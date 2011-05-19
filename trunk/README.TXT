@@ -37,7 +37,8 @@ Run $ python cagt.py --help for a help message describing the modes.
 
 Detailed Options:
 ---------------------
-usage: cagt.py [-h] [--cluster] [--make-plots] [--make-html]
+usage: cagt.py [-h] [--cluster] [--make-plots] [--make-html] output_dir profiles_list_filename
+
 [--low_signal_cutoff_quantile LOW_SIGNAL_CUTOFF_QUANTILE]   Default: 0.9 (magnitude quantile to use to compare to low signal threshold)
 
 [--cluster_then_merge_num_clusters CLUSTER_THEN_MERGE_NUM_CLUSTERS]  Default: 40 (number of k-means preclusters before merging)
@@ -51,12 +52,36 @@ usage: cagt.py [-h] [--cluster] [--make-plots] [--make-html]
 
 [--npass NPASS] [--use_kmeans_plus_plus USE_KMEANS_PLUS_PLUS] Default: 1 (number of k-means passes. Set to a higher number for more robust results)  
 
-[--normalize_upper_ylim NORMALIZE_UPPER_YLIM] Default: 0 (minimum y-axis in magnitude plots)
-[--normalize_lower_ylim NORMALIZE_LOWER_YLIM] Default: 50 (maximum y-axis in magnitude plots)
+[--normalize_upper_ylim NORMALIZE_UPPER_YLIM] Default: -4 (minimum y-axis in z-score shape plots)
+[--normalize_lower_ylim NORMALIZE_LOWER_YLIM] Default: +4 (maximum y-axis in z-score shape plots)
 
 [--space_between_colnames SPACE_BETWEEN_COLNAMES]  Ignore
 
-output_dir profiles_list_filename
+NOTE: There are some more parameters that are set in the 'PROFILE_LIST_FILENAME'. These are listed below
+
+Profiles list file:
+-----------------------------------------------
+profiles_file_absolute_path	peak_tag	signal_tag	cell_line	peak_original_filename	signal_original_filename	ylim_lower,ylim_upper	allow_profile_flipping?	number_of_bases_per_value	low_signal_cutoff_value
+
+profiles_file_absolute_path - This tells CAGT where to find the profiles file
+
+peak_tag - A short name for the set of peaks used for this profiles file (i.e. Pol2). In pairwise analysis (coming soon), CAGT only compares profiles with the same peak_tag.
+
+signal_tag - A short name for the signal used for this profiles file (i.e. H3K4me1)
+
+cell_line - The cell line of this profiles file.  In pairwise analysis (coming soon), CAGT only compares profiles files with the same peak_tag.
+
+peak_original_filename - The base filename of the peak file (no Path information). This is used to generate filenames, so it is important that it is unique.
+
+peak_original_filename - The base filename of the signal file (no Path information). This is used to generate filenames, so it is important that it is unique.
+
+ylim_lower,ylim_upper - These define the limits on the Y axis of the magnitude plots generated.
+
+allow_profile_flipping? - A value True or False, this tells CAGT whether or not to flip profiles when clustering. e.g. For profiles around a TSS which are oriented appropriately, you do not want to allow flipping
+
+number_of_bases_per_value - The number of bases each value in the profile represents. This is used in generating plots to determine the labels on the X axis. For example your signal vectors in the .cagt file can have say 250 data points but each one could be sampled every 10 bp. In such a case, set this value to 10.
+
+low_signal_cutoff_value - CAGT removes profiles with [--low_signal_cutoff_quantile] quantile (Default: 0.9) less than [low_signal_cutoff_value] from the set of profiles to be clustered. (This is done because correlation cannot be computed on profiles with extremely low signal and these produce spurious shapes). For signal in units of fold change, 1 is a reasonable value for this parameter.
  
 Output:
 --------------------------------
