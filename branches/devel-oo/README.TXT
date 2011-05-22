@@ -12,38 +12,127 @@ Some terminology:
 --------------------------------
 CAGT uses two basic types of data:  peak data (i.e. transcription factor binding sites) and signal data (i.e. histone mark ChIP-seq fold change signal).  
 
-To simplify display, each peak and signal track respectively is referred to with a unique "tag".  We call the signal around a peak a "profile".  
-
 
 Instructions for using CAGT:
 --------------------------------
 0) Install the necessary libraries (see the Libraries section below)
 
-1) Generate a profiles list file according to the format in FILE_FORMATS.TXT
+1) Generate a profiles list file according to the format in FILE_FORMATS.txt.  This defines the set of profiles CAGT will run on.
 
-2) Specify histone_profiles_path and profiles_list_filename in parameters.py
+2) Run CAGT from the command line with 
+> python cagt.py <output folder> <profiles list file> <options> <mode>
 
-3) Run CAGT from the command line with 
-> python cagt.py <output folder> <profiles list file> <mode>
+output folder:  CAGT will put all its output in this folder.  You should specify a different output folder for each run of CAGT.  There's no need to create the folder first; CAGT will create it if it doesn't already exist.  
 
-output_folder:  CAGT will put all its output in this folder.  You should specify a different output folder for each run of CAGT.  There's no need to create the folder first; CAGT will create it if it doesn't already exist.  
+options: Type python cagt.py --help to see the list of all set-able parameters, as well as what each one does. 
 
 mode: CAGT has four modes: "--cluster", "--make-plots" and "--make-html".  You can specify one or many modes; if you specify many modes, they run sequentially. They must be run in the following order: cluster > make-plots > make-html, but you can run one mode, let it finish, then run another mode; all the relevant data is saved after each mode completes.
-
 - In "cluster" mode, CAGT clusters each set of profiles and puts the results in output_folder/clustering_info.pickle.
 - In "make-plots" mode, CAGT makes aggregation plots for each peak_tag-signal_tag pair, and puts them in their own folder in output_folder.
 - In "make-html" mode, CAGT makes an html view of the plots, and puts a file called "html_view.html" in output_folder (and also produces a number of supporting html pages).  Viewing html_view.html in a browser is an easy way to view the results.
 
 Run $ python cagt.py --help for a help message describing the modes.
 
-4) The results of the run are placed in output_folder. Open html_view.html in a browser for an easy-to-navigate view of the results.
+3) The results of the run are placed in output_folder. Open html_view.html in a browser for an easy-to-navigate view of the results.
+
+Detailed Options:
+---------------------
+usage: cagt.py [-h] [--cluster] [--make-plots] [--make-html] output_dir profiles_list_filename
+
+[--low_signal_cutoff_quantile LOW_SIGNAL_CUTOFF_QUANTILE]   Default: 0.9 (magnitude quantile to use to compare to low signal threshold)
+
+[--cluster_then_merge_num_clusters CLUSTER_THEN_MERGE_NUM_CLUSTERS]  Default: 40 (number of k-means preclusters before merging)
+
+[--cluster_merge_correlation_cutoff CLUSTER_MERGE_CORRELATION_CUTOFF]  Default: 0.6 (merge clusters whose average patterns correlate > this cutoff. Use a stricter threshold such as 0.8 if you want more granularity e.g. DNase data)
+
+[--num_groups NUM_GROUPS] Default: 4 Number of magnitude groups
+[--group_by_quantile GROUP_BY_QUANTILE]    Default: 0.9 (magnitude quantile to use to split profiles into magnitude groups)
+[--group_quantile_lower_bound GROUP_QUANTILE_LOWER_BOUND]  Default: 0.1 (lowest quantile to use for magnitude group splits)
+[--group_quantile_upper_bound GROUP_QUANTILE_UPPER_BOUND]  Default: 0.9 (highest quantile to use for magnitude group splits)
+
+[--npass NPASS] [--use_kmeans_plus_plus USE_KMEANS_PLUS_PLUS] Default: 1 (number of k-means passes. Set to a higher number for more robust results)  
+
+[--normalize_upper_ylim NORMALIZE_UPPER_YLIM] Default: -4 (minimum y-axis in z-score shape plots)
+[--normalize_lower_ylim NORMALIZE_LOWER_YLIM] Default: +4 (maximum y-axis in z-score shape plots)
+
+[--space_between_colnames SPACE_BETWEEN_COLNAMES]  Ignore
+
+NOTE: There are some more parameters that are set in the 'PROFILE_LIST_FILENAME'. These are listed below
+
+Profiles list file:
+-----------------------------------------------
+profiles_file_absolute_path	peak_tag	signal_tag	cell_line	peak_original_filename	signal_original_filename	ylim_lower,ylim_upper	allow_profile_flipping?	number_of_bases_per_value	low_signal_cutoff_value
+
+profiles_file_absolute_path - This tells CAGT where to find the profiles file
+
+peak_tag - A short name for the set of peaks used for this profiles file (i.e. Pol2). In pairwise analysis (coming soon), CAGT only compares profiles with the same peak_tag.
+
+signal_tag - A short name for the signal used for this profiles file (i.e. H3K4me1)
+
+cell_line - The cell line of this profiles file.  In pairwise analysis (coming soon), CAGT only compares profiles files with the same peak_tag.
+
+peak_original_filename - The base filename of the peak file (no Path information). This is used to generate filenames, so it is important that it is unique.
+
+peak_original_filename - The base filename of the signal file (no Path information). This is used to generate filenames, so it is important that it is unique.
+
+ylim_lower,ylim_upper - These define the limits on the Y axis of the magnitude plots generated.
+
+allow_profile_flipping? - A value True or False, this tells CAGT whether or not to flip profiles when clustering. e.g. For profiles around a TSS which are oriented appropriately, you do not want to allow flipping
+
+number_of_bases_per_value - The number of bases each value in the profile represents. This is used in generating plots to determine the labels on the X axis. For example your signal vectors in the .cagt file can have say 250 data points but each one could be sampled every 10 bp. In such a case, set this value to 10.
+
+low_signal_cutoff_value - CAGT removes profiles with [--low_signal_cutoff_quantile] quantile (Default: 0.9) less than [low_signal_cutoff_value] from the set of profiles to be clustered. (This is done because correlation cannot be computed on profiles with extremely low signal and these produce spurious shapes). For signal in units of fold change, 1 is a reasonable value for this parameter.
+ 
+Output:
+--------------------------------
+The easiest way to interact with CAGT's output is through the html views.  Use a browser to open the html_view_summary file in the output folder.  Note that you can click on any plot to view a list of its members' indices.
+
+The output file structure is as follows:
+<output folder>/
+	html_view_summary.html  (top-level html view)
+	log.txt  (logs generated by CAGT)
+	<profile set 1>/
+		boxplot_<cluster_type>.png  (plots produced by CAGT)
+		html_view_<cluster_type>.html  (lower-level html views)
+		members_<cluster_type>.txt  (list of members' indices for each cluster)
+		clustering_info.pickle  (used by CAGT)
+		done_making_plots.txt  (used by CAGT)
+	<profile set 2>/
+		...
+	...
+		
+
 
 Libraries:
 --------------------------------
 CAGT requires these libraries:
-scipy - http://www.scipy.org/
-Pycluster - http://bonsai.hgc.jp/~mdehoon/software/cluster/software.htm
-rpy2 - http://rpy.sourceforge.net/rpy2.html
+numpy:
+home - http://numpy.scipy.org/
+source - http://sourceforge.net/projects/numpy/files/NumPy/1.6.0/numpy-1.6.0.tar.gz/download
+
+scipy: 
+home - http://www.scipy.org/
+source - http://sourceforge.net/projects/scipy/files/scipy/0.9.0/scipy-0.9.0.tar.gz/download
+
+Pycluster:
+home - http://bonsai.hgc.jp/~mdehoon/software/cluster/software.htm
+source - http://bonsai.hgc.jp/~mdehoon/software/cluster/Pycluster-1.50.tar.gz
+
+rpy2:
+home - http://rpy.sourceforge.net/rpy2.html
+source - http://sourceforge.net/projects/rpy/files/rpy2/2.1.x/rpy2-2.1.8.tar.gz/download
+using easy_install - type: easy_install rpy2
+
+All of these packages use python's standardized "distutils" install script.  In the source directory, just type:
+python setup.py install
+
+If you don't have root access, you can tell distutils to install the module in your home directory instead.  Instead type:
+python setup.py install --home=<dir>
+You may also have to add <home>/lib/python to your python path.  Type:
+export PYTHONPATH="<homedir>:${PYTHONPATH}"
+
+See this link for more info about using distutils without root access:
+http://docs.python.org/install/index.html#alternate-installation-the-home-scheme
 
 
 CAGT data format:
