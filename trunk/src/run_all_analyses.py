@@ -1,4 +1,6 @@
 
+
+
 from time import time
 import os
 import sys
@@ -6,12 +8,18 @@ import logging
 import traceback
 
 from src.filenames import *
-from src.output.boxplot_simple import boxplot_simple
-from src.ClusteringInfo.ClusteringInfo import clustering_info_load
+from src.boxplot import boxplot_simple
+from src.ClusteringInfo import clustering_info_load
 
 # def make_all_plots(profiles_info_list):
 # 	for profiles_info in profiles_info_list:
 # 		make_plots_for_profile(profiles_info)
+
+
+def run_all_analyses():
+  pass
+
+
 
 def make_plots_for_profile(profiles_info):
 	try:
@@ -62,4 +70,5 @@ def make_plots_for_pair(clustering_info):
 		boxplot_simple(clustering_info, "shape_cluster_unflipped", shape_number=shape_cluster)
 	for shape_cluster in shape_clusters_oversegmented:
 		boxplot_simple(clustering_info, "shape_cluster_oversegmented", shape_number=shape_cluster)
+
 

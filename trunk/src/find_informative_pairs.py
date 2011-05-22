@@ -1,7 +1,7 @@
 
-from src.analysis.mutual_information import *
-from src.ProfileInfo.ProfileInfo import *
-from src.ClusteringInfo.ClusteringInfo import *
+from src.mutual_information import *
+from src.ProfilesInfo import ProfilesInfo
+from src.ClusteringInfo import ClusteringInfo
 
 
 def find_informative_pairs(profiles_info_list):

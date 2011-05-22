@@ -2,7 +2,7 @@
 import pickle
 
 from src.filenames import *
-from src.analysis.mutual_information import mutual_information as find_mutual_information
+from src.mutual_information import mutual_information as find_mutual_information
 
 def pairwise_cluster_all(clustering_info):
 

@@ -1,6 +1,5 @@
 
 import sys
-sys.path.append('../../')
 import pickle
 import os
 from copy import deepcopy
@@ -8,8 +7,8 @@ import logging
 import traceback
 
 from src.filenames import *
-from src.ClusteringInfo.ClusteringInfo import *
-from src.analysis.gene_proximity_cluster import *
+from src.ClusteringInfo import *
+from src.gene_proximity_cluster import *
 
 def write_members_list_to_file(assignments, filename):
   f = open(filename,"w")
