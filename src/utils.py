@@ -9,7 +9,7 @@ r = rpy.r
 # backed by a numpy matrix.  Numpy matrices have the advantage of
 # implementing storage and indexing efficiently -- this class
 # just adds a level of indirection between the indices it's passed
-# and the indices in the matrix itself. The matrix itself can still 
+# and the indices in the matrix itself. The matrix itself can still
 # be accessed with DataMatrixMap.data
 class MatrixMap:
 	def __init__(self, data, ids):
@@ -19,14 +19,14 @@ class MatrixMap:
 		self.id_to_index = {}
 		for i in range(len(ids)):
 			self.id_to_index[self.ids[i]] = i
-		
+
 	def get_row(self, row_id):
 		return self.data[self.id_to_index[row_id]].flat
-	
+
 	def get_rows(self, row_ids):
 		indices = map(lambda id: self.id_to_index[id], row_ids)
 		return MatrixMap(self.data[indices,:], row_ids)
-		
+
 	def set_row(self, row_id, value):
 		self.data[self.id_to_index[row_id],:] = value
 
@@ -46,10 +46,10 @@ def assignments_to_clusters(assignments, ids):
 # 	num_clusters = range(len(clusters))
 # 	ids = reduce(lambda x,y: x+y, clusters).sorted()
 # 	assignments = [-1]*len(ids)
-# 	for 
-# 	
+# 	for
+#
 # 	return assignments, ids
-	
+
 def quantile(arr, q):
 	return sorted(arr)[int(len(arr)*q)]
 
@@ -65,7 +65,7 @@ def find_in_list(list, item):
 
 # def map_indices_backwards(indices, mapping):
 # 	return map(lambda i: find_in_list(mapping, i), indices)
-	
+
 # def map_assignments(assignments, mapping, num_peaks):
 # 	mapped_assignments = [-1]*num_peaks
 # 	for i in range(len(assignments)):

@@ -23,13 +23,12 @@ except ImportError:
 import logging
 
 from src.filenames import *
-from src.ClusteringInfo.ClusteringInfo import ClusteringInfo, clustering_info_dump, clustering_info_load
-from src.analysis.cluster_all import *
-from src.output.make_all_plots import *
-from src.analysis.cluster_correlate import make_all_correlations
-from src.output.html_view import make_all_html_views
-from src.file_processing.read_profiles_list_file import read_profiles_list_file
-from src.analysis.gene_proximity_cluster import *
+from src.ClusteringInfo import ClusteringInfo, clustering_info_dump, clustering_info_load
+from src.cluster import *
+from src.run_all_analyses import *
+from src.html_view import make_all_html_views
+from src.file_processing import read_profiles_list_file
+from src.gene_proximity_cluster import *
 
 
 def log_profiles_info(profiles_info):

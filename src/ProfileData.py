@@ -2,12 +2,12 @@
 import scipy as sp
 
 from src.filenames import *
-from src.analysis.normalize import normalize
-from src.analysis.get_low_signal_profiles import get_low_signal_profiles
+from src.file_processing import normalize
+from src.file_processing import get_low_signal_profiles
 from src.utils import *
-from src.file_processing.read_profiles_file import read_profiles_file
-from src.output.rpy_matrix_conversion import np_matrix_to_r
-from src.ProfilesInfo.ProfilesInfo import *
+from src.file_processing import read_profiles_file
+from src.rpy_matrix_conversion import np_matrix_to_r
+from src.ProfilesInfo import *
 
 def append_data(data1, data2):
 	assert(len(data1.ids) == len(data2.ids))

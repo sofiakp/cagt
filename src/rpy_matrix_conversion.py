@@ -5,11 +5,10 @@
 # Updated 7/10
 # ---------------------------------------------------------
 # This module is responsible for converting between
-# different representations of matrices.  
+# different representations of matrices.
 #####################################################################
 
 import sys
-sys.path.append('../')
 
 import rpy2.robjects as rpy
 r = rpy.r
@@ -25,10 +24,10 @@ from copy import deepcopy
 def python_matrix_to_r(m, dimnames=None):
 	vec = rpy.FloatVector(reduce(lambda x,y: x+y, m, []))
 	if dimnames is None:
-		r_dimnames = r['list'](rpy.StrVector(range(1,len(m)+1)), 
+		r_dimnames = r['list'](rpy.StrVector(range(1,len(m)+1)),
 		                       rpy.StrVector(range(1,len(m[0])+1)))
 	else:
-		r_dimnames = r['list'](rpy.StrVector(dimnames[0]), 
+		r_dimnames = r['list'](rpy.StrVector(dimnames[0]),
 		                       rpy.StrVector(dimnames[1]))
 	return r['matrix'](vec, dimnames=r_dimnames, nrow=len(m), byrow=True)
 
@@ -40,12 +39,12 @@ def list_to_r_matrix(lst, dimnames=None, nrow=1):
 	if len(lst) == 0 or nrow == 0:
 		return r('NA')
 	if dimnames is None:
-		r_dimnames = r['list'](rpy.StrVector(range(1,nrow+1)), 
+		r_dimnames = r['list'](rpy.StrVector(range(1,nrow+1)),
 		                       rpy.StrVector(range(1,len(lst)/nrow+1)))
 	else:
 		assert(len(dimnames[0])==nrow)
 		assert(len(dimnames[1])==len(lst)/nrow)
-		r_dimnames = r['list'](rpy.StrVector(dimnames[0]), 
+		r_dimnames = r['list'](rpy.StrVector(dimnames[0]),
 		                       rpy.StrVector(dimnames[1]))
 	return r['matrix'](rpy.FloatVector(lst), dimnames=r_dimnames, nrow=nrow, byrow=True)
 
@@ -75,7 +74,7 @@ def r_matrix_to_np(m):
 	m_arr.shape = (nrow, ncol)
 	m_np = np.matrix(m_arr, copy=False)
 	return m_np, dimnames
-	
+
 
 #####################################################################
 # np_matrix_to_r
