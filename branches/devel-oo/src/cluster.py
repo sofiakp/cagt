@@ -9,6 +9,7 @@ import traceback
 import traceback
 from math import sqrt
 from copy import deepcopy
+import itertools
 
 from Pycluster import kcluster
 from numpy import corrcoef
@@ -17,7 +18,7 @@ import numpy as np
 from src.utils import *
 from src.utils import get_assignment_indices
 from src.filenames import *
-from src.ClusteringInfo import ClusteringInfo
+from src.ClusteringInfo import ClusteringInfo, clustering_info_dump, clustering_info_load
 
 
 
