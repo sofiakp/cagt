@@ -13,16 +13,10 @@ from time import time
 from random import randrange
 import os
 
-# Output id
-# def make_output_id():
-#		return str(randrange(100000))
-# def make_output_foldername(output_folder):
-#		return histone_profiles_path + "output" + output_folder + "/"
-
 def make_profiles_foldername(profiles_info):
 	return os.path.join(profiles_info.output_folder, profiles_info.signal_filename + "_around_" +\
 	profiles_info.peak_filename)
-	
+
 def make_profiles_pair_foldername(profiles_info_pair):
 	return os.path.join(profiles_info_pair.output_folder,
 	profiles_info_pair.profiles_info1.signal_filename + "_and_"\
@@ -51,7 +45,7 @@ def make_gene_proximity_filename(profiles_info):
 
 def make_filename(profiles_info, file_type, type_of_data,\
 shape_number=None, group_number=None):
-		
+
 	assert(file_type in ["boxplot", "members", "heatmap", "html_view"])
 	assert(type_of_data in ["summary", "all", "high_signal", "low_signal", "magnitude_group",\
 	"shape_cluster", "shape_cluster_unflipped","shape_cluster_oversegmented", "grouped_shape",\
@@ -79,7 +73,7 @@ shape_number=None, group_number=None):
 		elif type_of_data == "profiles":
 			type_of_data_name += "_" + profiles_info.signal_filename + "_around_" + profiles_info.peak_filename
 		type_of_data_name += "_" + profiles_info.cell_line
-			
+
 	if file_type == "html":
 		type_of_data_name = ""
 	if file_type == "boxplot":
@@ -88,7 +82,7 @@ shape_number=None, group_number=None):
 		extension = ".txt"
 	elif file_type == "html_view":
 		extension = ".html"
-	
+
 	filename = os.path.join(foldername, file_type + "_" + type_of_data_name + extension)
 	return filename
 

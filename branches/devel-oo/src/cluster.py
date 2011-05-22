@@ -1,38 +1,23 @@
 
 import sys
-sys.path.append('../../')
+import os
+from time import time
 from random import randrange
 from copy import deepcopy
 import logging
 import traceback
-
-
-from time import time
-import os
-import logging
 import traceback
-
-
+from math import sqrt
+from copy import deepcopy
 
 from Pycluster import kcluster
 from numpy import corrcoef
 import numpy as np
 
 from src.utils import *
-from src.filenames import *
-from src.ClusteringInfo.ClusteringInfo import *
-from src.analysis.group_by_magnitude import group_by_magnitude
-from src.analysis.cluster_then_merge import cluster_then_merge
-
-
-
-import numpy as np
-from numpy import corrcoef
-from math import sqrt
-from copy import deepcopy
-
-
 from src.utils import get_assignment_indices
+from src.filenames import *
+from src.ClusteringInfo import ClusteringInfo
 
 
 
@@ -138,11 +123,6 @@ def kmeansPP(data, k):
     return deepcopy(list(assignments.flat))
 
 
-#######################################################################
-# k_cluster()
-# -----------------------------------------------
-# Simple wrapper on the kcluster function
-#######################################################################
 def k_cluster(data, num_clusters, npass, args, dist='c'):
     # It doesn't make sense to cluster less than nclusters profiles
     assert(len(data.ids) > 0)
@@ -303,11 +283,11 @@ def assign_to_group(val, cutoffs):
 
 
 def group_by_magnitude(clustering_info):
-	num_groups = clustering_info.profiles_info.args.num_groups
-	group_by_quantile = clustering_info.profiles_info.args.group_by_quantile
-	group_quantile_bounds = [clustering_info.profiles_info.args.group_quantile_lower_bound, clustering_info.profiles_info.args.group_quantile_upper_bound]
-	group_quantile_lower_bound = clustering_info.profiles_info.args.group_quantile_lower_bound
-	group_quantile_upper_bound = clustering_info.profiles_info.args.group_quantile_upper_bound
+    num_groups = clustering_info.profiles_info.args.num_groups
+    group_by_quantile = clustering_info.profiles_info.args.group_by_quantile
+    group_quantile_bounds = [clustering_info.profiles_info.args.group_quantile_lower_bound, clustering_info.profiles_info.args.group_quantile_upper_bound]
+    group_quantile_lower_bound = clustering_info.profiles_info.args.group_quantile_lower_bound
+    group_quantile_upper_bound = clustering_info.profiles_info.args.group_quantile_upper_bound
 
     data = clustering_info.PD.high_signal_data
     if len(data.ids) < 5:

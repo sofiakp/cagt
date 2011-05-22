@@ -1,9 +1,5 @@
 
 
-def run_all_analyses():
-  pass
-
-
 
 from time import time
 import os
@@ -12,12 +8,18 @@ import logging
 import traceback
 
 from src.filenames import *
-from src.output.boxplot_simple import boxplot_simple
-from src.ClusteringInfo.ClusteringInfo import clustering_info_load
+from src.boxplot import boxplot_simple
+from src.ClusteringInfo import clustering_info_load
 
 # def make_all_plots(profiles_info_list):
 # 	for profiles_info in profiles_info_list:
 # 		make_plots_for_profile(profiles_info)
+
+
+def run_all_analyses():
+  pass
+
+
 
 def make_plots_for_profile(profiles_info):
 	try:

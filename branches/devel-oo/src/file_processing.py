@@ -12,28 +12,28 @@ r = rpy.r
 
 from src.filenames import *
 from src.utils import MatrixMap
-from src.ProfilesInfo.ProfilesInfo import *
+from src.ProfilesInfo import ProfileInfo
 
 
 def read_assignments(cluster_type, peak_tag, signal_tag):
-	filename = make_assignments_filename(peak_tag, signal_tag, output_id)
-	return map(int,open(filename, "r").read().split())
+    filename = make_assignments_filename(peak_tag, signal_tag, output_id)
+    return map(int,open(filename, "r").read().split())
 
 
 def normalize(data):
-	ids = data.ids
-	data = data.data
-	norm_data = np.zeros(data.shape)
+    ids = data.ids
+    data = data.data
+    norm_data = np.zeros(data.shape)
 
-	for row in range(data.shape[0]):
-		std = np.std(data[row,:])
-		avg = np.mean(data[row,:])
-		if std < .001:
-			norm_data[row,:] = np.array(data[row,:])-avg
-		else:
-			norm_data[row,:] = (np.array(data[row,:])-avg)/std
+    for row in range(data.shape[0]):
+        std = np.std(data[row,:])
+        avg = np.mean(data[row,:])
+        if std < .001:
+            norm_data[row,:] = np.array(data[row,:])-avg
+        else:
+            norm_data[row,:] = (np.array(data[row,:])-avg)/std
 
-	return MatrixMap(norm_data, ids)
+    return MatrixMap(norm_data, ids)
 
 
 global made_converting_NaNs_warning
@@ -59,7 +59,6 @@ def read_profiles_file(filename):
 
     raw_data = []
     peaks = []
-# rownames = []
     for line in file:
         chr = line.split()[0]
         start = int(line.split()[1])
@@ -69,7 +68,6 @@ def read_profiles_file(filename):
         vals = array.array('f', map(convert_to_float, line.split()[3].split(',')))
         raw_data.append(vals)
 
-# data = np.matrix(raw_data)
     data = np.array(raw_data)
     ids = range(len(peaks))
     data = MatrixMap(data, ids)
@@ -82,29 +80,17 @@ def read_profiles_list_file(filename, output_id, args):
     profiles = []
     for line in f:
         profiles.append(ProfileInfo(line, output_id, args))
-        # line = line.split()
-        # entry = {}
-        # entry["filename"] = line[0]
-        # entry["peak_tag"] = line[1]
-        # entry["signal_tag"] = line[2]
-        # entry["cell_line"] = line[3]
-        # entry["peak_filename"] = line[4]
-        # entry["signal_filename"] = line[5]
-        # entry["ylims"] = map(float, line[6].split(','))
-        # entry["flip"] = line[7]
-        # entry["bin_size"] = line[8]
-        # profiles.append(entry)
-    return profiles
+        return profiles
 
 
 def get_low_signal_profiles(data, low_signal_cutoff_value, low_signal_cutoff_quantile):
-	ncol = data.data.shape[1]
-	nrow = len(data.ids)
-	low_signal_rows = filter(\
-	lambda id: sorted(data.get_row(id))\
-	[int(float(ncol)*low_signal_cutoff_quantile)]<low_signal_cutoff_value,\
-	data.ids)
-	return low_signal_rows
+    ncol = data.data.shape[1]
+    nrow = len(data.ids)
+    low_signal_rows = filter(\
+    lambda id: sorted(data.get_row(id))\
+    [int(float(ncol)*low_signal_cutoff_quantile)]<low_signal_cutoff_value,\
+    data.ids)
+    return low_signal_rows
 
 
 

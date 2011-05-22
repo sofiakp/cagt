@@ -14,8 +14,7 @@ import pickle
 import os
 
 from src.filenames import *
-from src.ProfileData.ProfileData import make_ProfileData
-from src.file_processing.compute_signal_ylims import compute_signal_ylims
+from src.ProfileData import make_ProfileData
 
 class ClusteringInfo:
   def __init__(self, profiles_info):
@@ -39,12 +38,6 @@ class ClusteringInfo:
   def make_PD(self):
     self.PD, self.peaks, self.num_peaks, self.low_signal, self.high_signal = make_ProfileData(self.profiles_info, self)
     self.ids = self.PD.data.ids
-    # if not self.PDs.has_key(peak_tag):
-    #   self.PDs[peak_tag] = {}
-    # if self.PDs[peak_tag].has_key(signal_tag):
-    #   return
-    # self.PDs[peak_tag][signal_tag] = ProfileData(self, peak_tag, signal_tag)
-
   def free_PD(self):
     del self.PD
     self.PD = None
