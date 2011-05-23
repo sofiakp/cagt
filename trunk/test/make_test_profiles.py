@@ -61,9 +61,10 @@ def write_cagt_file(profiles, filename):
 def write_profiles_list_file(profile_filenames, filename):
     """Writes a profiles list file"""
     f = open(filename, 'w')
-    for profile_filename in profile_filenames:
+    for i in range(len(profile_filenames)):
+        profile_filename = profile_filenames[i]
         f.write('%s\t' % os.path.abspath(profile_filename))
-        f.write('TestPeak\tTestSignal\tTestCellLine\ttest_peaks.bed\ttest_sig.begraph\t0,50\tTrue\t10\t1\n')
+        f.write('TestPeak\tTestSignal%s\tTestCellLine\ttest_peaks.bed\ttest_sig%s.begraph\t0,50\tTrue\t10\t1\n' % (i, i))
     f.close()
     return
 
@@ -72,9 +73,9 @@ def main():
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('cagt_filename_prefix', type=str, action='store', help='Output location of cagt file')
     parser.add_argument('profiles_list_filename', type=str, action='store', help='Output location of profiles list file')
-    parser.add_argument('--num_files', type=int, action='store', default=1, help='Number of CAGT files to make')
-    parser.add_argument('--num_clusters', type=int, action='store', default=5, help='Number of clusters profiles are divided into')
-    parser.add_argument('--num_per_cluster', type=int, action='store', default=100, help='Number of profiles per cluster')
+    parser.add_argument('--num_files', type=int, action='store', default=3, help='Number of CAGT files to make')
+    parser.add_argument('--num_clusters', type=int, action='store', default=3, help='Number of clusters profiles are divided into')
+    parser.add_argument('--num_per_cluster', type=int, action='store', default=20, help='Number of profiles per cluster')
     args = parser.parse_args()
 
     cagt_filenames = ['%s%s.cagt' % (args.cagt_filename_prefix, i)
