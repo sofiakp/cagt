@@ -10,7 +10,7 @@ _folder_path = os.path.split(os.path.abspath(__file__))[0]
 sys.path.append(_folder_path)
 
 def generate_profiles(num_clusters, num_per_cluster, profile_length=100,
-                      mode_val=40, spread_stdev_fraction=.03, noise_stdev_fraction=.1):
+                      mode_val=40, spread_stdev_fraction=.03, noise_stdev_fraction=.1, **_):
     """Generates num_clusters profiles with num_per_cluster profiles each.
     Profiles are (usually) more similar within clusters than between them.
 
@@ -68,21 +68,14 @@ def write_profiles_list_file(profile_filenames, filename):
     return
 
 
-def main():
-    parser = argparse.ArgumentParser(description='')
-    parser.add_argument('cagt_filename_prefix', type=str, action='store', help='Output location of cagt file')
-    parser.add_argument('profiles_list_filename', type=str, action='store', help='Output location of profiles list file')
-    parser.add_argument('--num_files', type=int, action='store', default=1, help='Number of CAGT files to make')
-    parser.add_argument('--num_clusters', type=int, action='store', default=5, help='Number of clusters profiles are divided into')
-    parser.add_argument('--num_per_cluster', type=int, action='store', default=100, help='Number of profiles per cluster')
-    args = parser.parse_args()
+def main(args):
 
     cagt_filenames = ['%s%s.cagt' % (args.cagt_filename_prefix, i)
                      for i in range(args.num_files)]
 
 
     for i in range(len(cagt_filenames)):
-        profiles, centers = generate_profiles(args.num_clusters, args.num_per_cluster)
+        profiles, centers = generate_profiles(**vars(args))
         print "file %s cluster centers: %s" % (i, centers)
         write_cagt_file(profiles, cagt_filenames[i])
 
@@ -91,7 +84,15 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('cagt_filename_prefix', type=str, action='store', help='Output location of cagt file')
+    parser.add_argument('profiles_list_filename', type=str, action='store', help='Output location of profiles list file')
+    parser.add_argument('--num_files', type=int, action='store', default=1, help='Number of CAGT files to make')
+    parser.add_argument('--num_clusters', type=int, action='store', default=5, help='Number of clusters profiles are divided into')
+    parser.add_argument('--num_per_cluster', type=int, action='store', default=100, help='Number of profiles per cluster')
+    parser.add_argument('--profile_length', type=int, action='store', default=100, help='Length of each profile')
+    args = parser.parse_args()
+    main(args)
 
 
 

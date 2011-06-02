@@ -92,3 +92,15 @@ def index_r_data(r_data, indices):
 	rpy.globalenv['data'] = r_data
 	return r('data[indices,]')
 
+
+def partition_by_identifier(lst, get_identifier):
+    """Takes a list of arbitrary objects, and returns a partition
+    (list of lists) that groups the objects that have the
+    same output of get_identifier (that is, if
+    get_identifier(A) == get_identifier(B), A and B will be
+    grouped together)"""
+    uniq_identifiers = list(set(map(get_identifier, lst)))
+    def same_identifier_gen(id):
+        return lambda x: x == id
+    map(lambda id: filter(same_identifier_gen(id), lst), uniq_identifiers)
+
