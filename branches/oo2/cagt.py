@@ -23,7 +23,7 @@ except ImportError:
 import logging
 
 from src.filenames import *
-from src.ClusteringInfo import ClusteringInfo, clustering_info_dump, clustering_info_load
+from src.ClusteringInfo import ClusteringInfo, clustering_info_dump, clustering_info_load, clustering_info_delete
 from src.cluster import *
 from src.run_all_analyses import *
 from src.html_view import make_all_html_views
@@ -49,6 +49,7 @@ if __name__ == '__main__':
     parser.add_argument('--make-plots', action='store_true', default=False, help='Tells CAGT to run in make-plots mode')
     parser.add_argument('--make-html', action='store_true', default=False, help='Tells CAGT to run in make-html mode')
     parser.add_argument('--gene-proximity', help='Tells CAGT to run in gene-proximity mode. This argument takes the location of a gene list file')
+    parser.add_argument('--signal-wide-cluster', action='store_true', default=False, help='Tells CAGT to run in signal-wide-cluster mode (not recommended)')
     parser.add_argument('-d', '--debug', action='store_true', default=False, help='Tells CAGT to run in debug mode (not recommended)')
     parser.add_argument('output_dir', help="All CAGT's output goes here. Use a different output_dir for each run")
     parser.add_argument('profiles_list_filename', help="Path to a file in the profiles_list format (see FILE_FORMATS.TXT)")
@@ -117,7 +118,13 @@ if __name__ == '__main__':
         if args.cluster:
             logging.info("starting clustering...")
             t_cluster = time()
-            cluster_profile(profiles_info)
+            #cluster_profile(profiles_info)
+            clustering_info = ClusteringInfo(profiles_info)
+            clustering_info.make_PD()
+            group_by_magnitude(clustering_info)
+            cluster_then_merge(clustering_info)
+            clustering_info.free_PD()
+            clustering_info_dump(clustering_info)
             logging.info("Time to cluster: %s", time() - t_cluster)
 
         if do_gene_proximity:
@@ -134,6 +141,8 @@ if __name__ == '__main__':
             logging.info("Time to make plots: %s", time()-t_plots)
 
         logging.info("Total time for %s: %i", str(profiles_info), time()-t0)
+
+
 
 
     if args.make_html:

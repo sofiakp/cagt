@@ -22,47 +22,8 @@ from src.ClusteringInfo import ClusteringInfo, clustering_info_dump, clustering_
 
 
 
-def cluster_profile(profiles_info):
-    try:
-        t0 = time()
-        if not os.path.isdir(make_profiles_foldername(profiles_info)):
-            os.mkdir(make_profiles_foldername(profiles_info))
-        if os.path.isfile(make_clustering_info_dump_filename(profiles_info)):
-            print "skipping", profiles_info
-            return
-        clustering_info = ClusteringInfo(profiles_info)
-        clustering_info.make_PD()
-        group_by_magnitude(clustering_info)
-        cluster_then_merge(clustering_info)
-        clustering_info.free_PD()
-        clustering_info_dump(clustering_info)
-    except Exception,error:
-        logging.error("Hit error in make_plots_for_profile")
-        logging.error("profiles_info: %s", str(profiles_info))
-        logging.error(str(error))
-        logging.error(traceback.format_exc())
-        print "HIT ERROR WHILE MAKING PLOTS FOR", profiles_info, " -- SKIPPING"
-        traceback.print_exc()
-        print "Skipping this set of profiles"
-        print "See logs for details"
 
 
-def cluster_profile_pair(profiles_info_pair):
-    try:
-        t0 = time()
-        if not os.path.isdir(make_profiles_pair_foldername(profiles_info_pair)):
-            os.mkdir(make_profiles_pair_foldername(profiles_info_pair))
-        if os.path.isfile(make_clustering_info_dump_filename(profiles_info_pair)):
-            print "skipping", profiles_info_pair
-            return
-        clustering_info = ClusteringInfo(profiles_info_pair)
-        clustering_info.make_PD()
-        group_by_magnitude(clustering_info)
-        cluster_then_merge(clustering_info)
-        clustering_info.free_PD()
-        clustering_info_dump(clustering_info)
-    except Exception,error:
-        print "HIT ERROR:", error, " WHILE CLUSTERING", profiles_info, " -- SKIPPING"
 
 
 def cluster_then_merge(clustering_info):
@@ -70,33 +31,26 @@ def cluster_then_merge(clustering_info):
     args = clustering_info.profiles_info.args
     num_groups = clustering_info.profiles_info.args.num_groups
     if len(norm_data.ids) < 5:
-        clustering_info.shape_clusters = assignments_to_clusters([0]*len(norm_data.ids), norm_data.ids)
-        clustering_info.shape_clusters_unflipped = assignments_to_clusters([0]*len(norm_data.ids), norm_data.ids)
-        clustering_info.shape_clusters_oversegmented = assignments_to_clusters([0]*len(norm_data.ids), norm_data.ids)
-
-        clustering_info.shape_clusters_oversegmented = [0]*len(norm_data.ids)
-        clustering_info.flipped = [False]*len(norm_data.ids)
-        return
-
-
-    t0 = time()
-    oversegmented_assignments = k_cluster(norm_data, num_clusters=args.cluster_then_merge_num_clusters, npass=args.npass, args=args)
-    oversegmented_clusters = assignments_to_clusters(oversegmented_assignments, norm_data.ids)
-    clustering_info.shape_clusters_oversegmented = oversegmented_clusters
-
-    t1 = time()
-    unflipped_clusters, tmp = hcluster(norm_data, oversegmented_clusters, args, flipping=False)
-    clustering_info.shape_clusters_unflipped = unflipped_clusters
-
-    if clustering_info.profiles_info.flip:
-        flipped_clusters, flipped = hcluster(norm_data, unflipped_clusters, args, flipping=True)
-        clustering_info.shape_clusters = flipped_clusters
-        clustering_info.flipped = flipped
+        flipped_clusters = assignments_to_clusters([0]*len(norm_data.ids), norm_data.ids)
+        unflipped_clusters = assignments_to_clusters([0]*len(norm_data.ids), norm_data.ids)
+        oversegmented_clusters = assignments_to_clusters([0]*len(norm_data.ids), norm_data.ids)
+        flipped = []
     else:
-        clustering_info.shape_cluster = unflipped_clusters
-        clustering_info.flipped = []
+        t0 = time()
+        oversegmented_assignments = k_cluster(norm_data, num_clusters=args.cluster_then_merge_num_clusters, npass=args.npass, args=args)
+        oversegmented_clusters = assignments_to_clusters(oversegmented_assignments, norm_data.ids)
+        unflipped_clusters, _ = hcluster(norm_data, oversegmented_clusters, args, flipping=False)
+        if clustering_info.profiles_info.flip:
+            flipped_clusters, flipped = hcluster(norm_data, unflipped_clusters, args, flipping=True)
+        else:
+            flipped_clusters = unflipped_clusters
+            flipped = []
 
-    print "number of clusters after merging:", len(flipped_clusters)
+    clustering_info.shape_clusters = flipped_clusters
+    clustering_info.shape_clusters_unflipped = unflipped_clusters
+    clustering_info.shape_clusters_oversegmented = oversegmented_clusters
+    clustering_info.flipped = flipped
+    return oversegmented_clusters, unflipped_clusters, flipped_clusters, flipped
 
 
 # From http://yongsun.me/tag/python/
@@ -129,7 +83,7 @@ def k_cluster(data, num_clusters, npass, args, dist='c'):
     # It doesn't make sense to cluster less than nclusters profiles
     assert(len(data.ids) > 0)
     if len(data.ids) <= num_clusters:
-        return range(data.shape[0])
+        return range(len(data.ids))
 
     if args.use_smoothed_correlation:
         try:
@@ -171,6 +125,7 @@ def k_cluster(data, num_clusters, npass, args, dist='c'):
 
 def medians(data):
     return np.apply_along_axis(lambda col: sorted(col)[int(len(col)*0.5)], 0, data.data)
+
 
 def euc(profile1, profile2):
     dist = 0.0

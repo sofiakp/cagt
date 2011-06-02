@@ -39,13 +39,7 @@ def make_ProfileData(profile_info, clustering_info):
 class ProfileData:
 	def __init__(self, profile_info, clustering_info, data, low_signal_ids, high_signal_ids):
 		self.profile_info = profile_info
-		# self.peak_tag = peak_tag
-		# self.signal_tag = signal_tag
 		self.clustering_info = clustering_info
-
-		# profiles_filename = make_profiles_filename(peak_tag, signal_tag)
-		# profiles_filename = profile_info.filename
-
 		self.data = data
 		self.low_signal_data = data.get_rows(low_signal_ids)
 		self.high_signal_data = data.get_rows(high_signal_ids)

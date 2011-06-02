@@ -33,6 +33,7 @@ class ClusteringInfo:
     self.group_clusters = None
     self.gene_proximity_assignments = None
     self.expected_gene_proximity = None
+    self.clusterings = []
 
 
   def make_PD(self):
