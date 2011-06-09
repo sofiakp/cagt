@@ -72,7 +72,7 @@ def read_profiles_file(filename):
     ids = range(len(peaks))
     data = MatrixMap(data, ids)
 
-    return data, peaks
+    return data, ids, peaks
 
 
 def read_profiles_list_file(filename, output_id, args):

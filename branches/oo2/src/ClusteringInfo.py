@@ -14,7 +14,6 @@ import pickle
 import os
 
 from src.filenames import *
-from src.ProfileData import make_ProfileData
 
 class ClusteringInfo:
   def __init__(self, profiles_info):
@@ -36,12 +35,12 @@ class ClusteringInfo:
     self.clusterings = []
 
 
-  def make_PD(self):
-    self.PD, self.peaks, self.num_peaks, self.low_signal, self.high_signal = make_ProfileData(self.profiles_info, self)
-    self.ids = self.PD.data.ids
-  def free_PD(self):
-    del self.PD
-    self.PD = None
+  #def make_PD(self):
+    #self.PD, self.peaks, self.num_peaks, self.low_signal, self.high_signal = make_ProfileData(self.profiles_info, self)
+    #self.ids = self.PD.data.ids
+  #def free_PD(self):
+    #del self.PD
+    #self.PD = None
 
 
 
