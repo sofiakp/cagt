@@ -20,6 +20,7 @@ from src.utils import *
 from src.utils import get_assignment_indices
 from src.filenames import *
 from src.ClusteringInfo import ClusteringInfo, clustering_info_dump, clustering_info_load
+from src.boxplot import boxplot_simple
 
 # TODO: Give all ClusteringResults the right priority
 
@@ -27,17 +28,18 @@ class ClusteringResult(object):
     """A generalized result of a clustering"""
     def __init__(self, ids, partition, profiles_info):
         self.ids, self.partition, self.profiles_info = ids, partition, profiles_info
+        self.index = {}
+        for cluster_id in self.cluster_id_iter():
+            for id in self.cluster_members(cluster_id):
+                self.index[id] = cluster_id
 
         # Don't overuse this -- give things real unique names instead
         # (Currently only used for generic ClusteringResults)
         self.uuid = uuid.uuid1()
 
-    def partition_element_iter(self):
-        for i in range(len(partition)):
+    def cluster_id_iter(self):
+        for i in range(len(self.partition)):
             yield i
-
-    def cluster_id_handle(self, cluster_id):
-        return str(output_id)
 
     def name(self):
         return "Unnamed Clustering"
@@ -45,6 +47,12 @@ class ClusteringResult(object):
     def handle(self):
         """Used in filenames etc"""
         return "unnamed_clustering_%s" % self.uuid
+
+    def cluster_handle(self, cluster_id):
+        return str(cluster_id)
+
+    def cluster_name(self, cluster_id):
+        return "%s cluster: %s" % (self.name(), cluster_id)
 
     def cluster_members(self, cluster_id):
         return self.partition[cluster_id]
@@ -58,7 +66,12 @@ class ClusteringResult(object):
         return self.name()
 
     def boxplot_title(self, cluster_id):
-        return "%s %s" % (self.name, cluster_id)
+        num_members = len(self.cluster_members(cluster_id))
+        percentage = int(100*float(num_members)/len(self.ids))
+        return "%s -- %s members (%s%%)" % \
+               (self.cluster_name(cluster_id),
+                num_members, percentage)
+        return self.cluster_name(cluster_id)
 
     def boxplot_ylims(self, cluster_id):
         return self.profiles_info.ylims
@@ -70,23 +83,51 @@ class ClusteringResult(object):
     def ylab(self, cluster_id):
         return "Normalized signal"
 
-    def filename_handle(self, parition_element_id):
-        """The filename_handle appears in filenames of boxplots and members"""
-        return '%s_%s' % (self.handle(), cluster_id)
-
-    def boxplot_make_line_in_middle(self, cluster_id):
+    def boxplot_make_verticle_line_in_middle(self, cluster_id):
         return True
 
     def boxplot_make_horizontal_line_at_origin(self, cluster_id):
         return True
+
+    def write_assignments(self):
+        filename = make_filename('clustering_result', 'assignments', clustering_result=self)
+        f = open(filename, 'w')
+        for id in self.ids:
+            f.write('%s ' % self.cluster_id_handle(index[id]))
+
+    def make_html_view(self):
+        filename = make_filename('clustering_result', 'html_view', clustering_result=self)
+        f = open(filename, 'w')
+        f.write('<html><body>')
+        f.write('<h1>%s</h1>' % self.html_view_title())
+        f.write('<a href=%s>Assignments...</a>' %
+                make_filename('clustering_result', 'assignments',
+                              clustering_result=self,
+                              relative_to=filename))
+        for cluster_id in self.cluster_id_iter():
+            f.write('<img src=%s>' %
+                    make_filename('cluster', 'boxplot',
+                                  clustering_result=self,
+                                  cluster_id=cluster_id,
+                                  relative_to=filename))
+        f.write('</html></body>')
+
+    def make_plots(self, PD):
+        for cluster_id in self.cluster_id_iter():
+            boxplot_simple(self, PD, cluster_id)
+
+
 
 class OversegmentedClusteringResult(ClusteringResult):
     """Result of Oversegmenting Clustering"""
     def __init__(self, partition, ids, profiles_info):
         super(OversegmentedClusteringResult, self).__init__(partition, ids, profiles_info)
 
-    def filename_handle(self, cluster_id):
-        return "oversegmented_cluster_%s" % cluster_id
+    def name(self):
+        return "Oversegmented"
+    def handle(self):
+        return "oversegmented"
+
 
 
 class UnflippedClusteringResult(ClusteringResult):
@@ -94,8 +135,11 @@ class UnflippedClusteringResult(ClusteringResult):
     def __init__(self, partition, ids, profiles_info):
         super(UnflippedClusteringResult, self).__init__(partition, ids, profiles_info)
 
-    def filename_handle(self, cluster_id):
-        return "unflipped_cluster_%s" % cluster_id
+    def name(self):
+        return "Unflipped"
+    def handle(self):
+        return "unflipped"
+
 
 
 
@@ -105,8 +149,11 @@ class FlippedClusteringResult(ClusteringResult):
         super(FlippedClusteringResult, self).__init__(partition, ids, profiles_info)
         self.flipped = flipped
 
-    def filename_handle(self, cluster_id):
-        return "flipped_cluster_%s" % cluster_id
+    def name(self):
+        return "Flipped"
+    def handle(self):
+        return "flipped"
+
 
     # TODO: flip data for plotting
 
@@ -116,8 +163,11 @@ class GroupingResults(ClusteringResult):
         super(FlippedClusteringResult, self).__init__(partition, ids, group_cutoffs)
         self.group_cutoffs = group_cutoffs
 
-    def filename_handle(self, cluster_id):
-        return "flipped_cluster_%s" % cluster_id
+    def name(self):
+        return "Magnitude groups"
+    def handle(self):
+        return "grouped"
+
 
 class ShapeAndGroupResults(ClusteringResult):
     """ClusteringResult for cluster and group intersection"""
@@ -127,15 +177,18 @@ class ShapeAndGroupResults(ClusteringResult):
         partition = shape_clustering.partition
         super(ShapeAndGroupResults, self).__init__(partition, ids)
 
-    def filename_handle(self, cluster_id):
+    def cluster_handle(self, cluster_id):
         return "group_and_shape_%s" % cluster_id
+    def name(self):
+        return "Shape and magnitude"
 
 
 
 
-def cluster_then_merge(clustering_info):
+
+def cluster_then_merge(clustering_info, PD):
     profiles_info = clustering_info.profiles_info
-    norm_data = clustering_info.PD.high_signal_norm_data
+    norm_data = PD.high_signal_norm_data
     args = clustering_info.profiles_info.args
     num_groups = clustering_info.profiles_info.args.num_groups
     ids = norm_data.ids
@@ -148,17 +201,17 @@ def cluster_then_merge(clustering_info):
         t0 = time()
         oversegmented_assignments = k_cluster(norm_data, num_clusters=args.cluster_then_merge_num_clusters, npass=args.npass, args=args)
         oversegmented_partition = assignments_to_clusters(oversegmented_assignments, norm_data.ids)
-        oversegmented_clustering = OversegmentedClusteringResult(oversegmented_partition, ids, profiles_info)
+        oversegmented_clustering = OversegmentedClusteringResult(ids, oversegmented_partition, profiles_info)
 
         unflipped_partition, _ = hcluster(norm_data, oversegmented_partition, args, flipping=False)
-        unflipped_clustering = UnflippedClusteringResult(unflipped_partition, ids, profiles_info)
+        unflipped_clustering = UnflippedClusteringResult(ids, unflipped_partition, profiles_info)
 
         if clustering_info.profiles_info.flip:
             flipped_partition, flipped = hcluster(norm_data, unflipped_partition, args, flipping=True)
         else:
             flipped_partition = unflipped_partition
             flipped = []
-        flipped_clustering = FlippedClusteringResult(flipped_partition, ids, profiles_info, flipped)
+        flipped_clustering = FlippedClusteringResult(ids, flipped_partition, profiles_info, flipped)
 
 
     clustering_info.shape_clusters = flipped_clustering
@@ -257,8 +310,9 @@ def correlation_with_flipping(profile1, profile2):
     return cors[0]
 
 
-def hcluster(norm_data, clusters, args, flipping=False):
-    cluster_merge_correlation_cutoff = args.cluster_merge_correlation_cutoff
+def hcluster(norm_data, clusters, args, flipping=False, cluster_merge_correlation_cutoff=None):
+    if cluster_merge_correlation_cutoff is None:
+        cluster_merge_correlation_cutoff = args.cluster_merge_correlation_cutoff
     t1 = time()
     # clusters = get_assignment_indices(clustering_assignments)
     cluster_medians = map(lambda ids: medians(norm_data.get_rows(ids)), clusters)
@@ -355,14 +409,14 @@ def assign_to_group(val, cutoffs):
     return group
 
 
-def group_by_magnitude(clustering_info):
+def group_by_magnitude(clustering_info, PD):
     num_groups = clustering_info.profiles_info.args.num_groups
     group_by_quantile = clustering_info.profiles_info.args.group_by_quantile
     group_quantile_bounds = [clustering_info.profiles_info.args.group_quantile_lower_bound, clustering_info.profiles_info.args.group_quantile_upper_bound]
     group_quantile_lower_bound = clustering_info.profiles_info.args.group_quantile_lower_bound
     group_quantile_upper_bound = clustering_info.profiles_info.args.group_quantile_upper_bound
 
-    data = clustering_info.PD.high_signal_data
+    data = PD.high_signal_data
     if len(data.ids) < 5:
         clustering_info.group_cutoffs = [0.0]*num_groups
         clustering_info.group_clusters = assignments_to_clusters([0]*len(data.ids), data.ids)

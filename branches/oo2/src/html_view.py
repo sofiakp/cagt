@@ -5,6 +5,7 @@ import os
 from copy import deepcopy
 import logging
 import traceback
+from os.path import dirname
 
 from src.filenames import *
 from src.ClusteringInfo import *
@@ -36,36 +37,34 @@ def write_members_list_to_file(assignments, filename):
 
 
 
-def make_html_view_summary(profiles_info_list):
-    profiles_info_example = profiles_info_list[0]
-    filename = make_filename(profiles_info_example, file_type="html_view", type_of_data="summary")
-    f = open(filename, "w")
 
-    f.write('<html>')
-    f.write('<body>')
-    f.write('<h1>Profiles:</h1>')
+
+def make_html_view_summary(profiles_info_list, output_folder):
+    filename = make_filename('all', 'html_view_summary', output_folder=output_folder)
+    f = open(filename, "w")
+    header = "<html><body><h1>Profiles:</h1>"
+    f.write(header)
+
     for profiles_info in profiles_info_list:
-        f.write("<a href=")
-        profiles_info_copy = deepcopy(profiles_info)
-        profiles_info_copy.output_folder = "./"
-        link = make_filename(profiles_info_copy, file_type="html_view", type_of_data="profiles")
-        f.write(link)
-        f.write(">")
-        f.write(profiles_info.signal_tag + " around " + profiles_info.peak_tag + " (" + profiles_info.cell_line + ")")
-        f.write("</a><br>")
-    f.write('</body>')
-    f.write('</html>')
+        f.write("<a href=%s>%s</a><br>" %
+               (make_filename('profile', 'html_view',
+                              relative_to=dirname(filename),
+                              profiles_info=profiles_info),
+                profiles_info))
+        make_html_profile_view(clustering_info_load(profiles_info))
+
+
+    footer = "</html></body>"
+    f.write(footer)
 
 
 def make_html_profile_view(clustering_info):
-
-    profiles_info = deepcopy(clustering_info.profiles_info)
-    profiles_info.output_folder = "../"
+    profiles_info = clustering_info.profiles_info
     peak_tag = profiles_info.peak_tag
     signal_tag = profiles_info.signal_tag
     cell_line = profiles_info.cell_line
-    filename = make_filename(clustering_info.profiles_info, file_type="html_view", type_of_data="profiles")
-    f = open(filename, "w")
+    this_filename = make_filename('profile', 'html_view', profiles_info=profiles_info)
+    f = open(this_filename, "w")
 
     header = """<html><body>
     <h1>%s around %s</h1><br>
@@ -76,76 +75,27 @@ def make_html_profile_view(clustering_info):
      profiles_info.signal_filename, profiles_info.cell_line)
     f.write(header)
 
-    #write_members_list_to_file(clustering_info.flipped, make_filename(clustering_info.profiles_info, 'members', 'flipped'))
-
     clustering_cmp = lambda c1,c2: -cmp(c1.html_view_priority, c2.html_view_priority)
     clusterings_by_priority = sorted(clustering_info.clusterings, clustering_cmp)
     for clustering_result in clusterings_by_priority:
         f.write('<h1>%s</h1>' % clustering_result.html_view_title())
-        f.write('<a href=%s>More information on this clustering result...<a>' % make_clustering_result_filename(clustering_result))
-        for cluster_id in clustering_result.partition_element_iter():
-            f.write('<a href=%s> <img src=%s> </a>' %
-                    (make_html_set_view_filename(), make_boxplot_filename()))
-
-        # code...
-
-    f.write('<a href=%s>Click here for a list of which profiles are flipped...</a>' % make_filename(profiles_info, 'members', 'flipped'))
-    f.write('<br>')
-    f.write('<h2>All profiles:</h2>')
-    f.write('<br>')
-    f.write('<a href='+make_filename(profiles_info, file_type="html_view", type_of_data="all")+'>')
-    f.write('<image src='+make_filename(profiles_info, file_type="boxplot", type_of_data="all")+'>')
-    f.write('</a>')
-    f.write('<br>')
-    f.write('<h2>Low signal:</h2>')
-    f.write('<br>')
-    f.write('<a href='+make_filename(profiles_info, file_type="html_view", type_of_data="low_signal")+'>')
-    f.write('<image src='+make_filename(profiles_info, file_type="boxplot", type_of_data="low_signal")+'>')
-    f.write('</a>')
-    f.write('<br>')
-    f.write('<h2>High signal:</h2>')
-    f.write('<br>')
-    f.write('<a href='+make_filename(profiles_info, file_type="html_view", type_of_data="high_signal")+'>')
-    f.write('<image src='+make_filename(profiles_info, file_type="boxplot", type_of_data="high_signal")+'>')
-    f.write('</a>')
-    f.write('<br>')
-    f.write('<h2>Shape clusters:</h2>')
-    shape_clusters = range(len(clustering_info.shape_clusters))
-    for shape_cluster in shape_clusters:
-        f.write('<a href='+make_filename(profiles_info, file_type="html_view", type_of_data="shape_cluster", shape_number=shape_cluster)+'>')
-        f.write('<image src='+make_filename(profiles_info, file_type="boxplot", type_of_data="shape_cluster", shape_number=shape_cluster)+'>')
-        f.write('</a>')
-    f.write('<br>')
-    f.write('<h2>Magnitude groups:</h2>')
-    group_clusters = range(len(clustering_info.group_clusters))
-    for group_cluster in group_clusters:
-        f.write('<a href='+make_filename(profiles_info, file_type="html_view", type_of_data="magnitude_group", group_number=group_cluster)+'>')
-        f.write('<image src='+make_filename(profiles_info, file_type="boxplot", type_of_data="magnitude_group", group_number=group_cluster)+'>')
-        f.write('</a>')
-    f.write('<br>')
-    f.write('<h2>Shapes grouped by magnitude:</h2>')
-    for shape_cluster in shape_clusters:
-        for group_cluster in group_clusters:
-            f.write('<image src='+make_filename(profiles_info, file_type="boxplot", type_of_data="grouped_shape", shape_number=shape_cluster, group_number=group_cluster)+'>')
+        clustering_result.make_html_view()
+        f.write('<a href=%s>More information on this clustering result...<a><br>'
+                % make_filename('clustering_result', 'html_view',
+                                clustering_result=clustering_result,
+                                relative_to=dirname(this_filename)))
+        for cluster_id in clustering_result.cluster_id_iter():
+            f.write('<img src=%s>' %
+                    make_filename('cluster', 'boxplot',
+                                  clustering_result=clustering_result,
+                                  cluster_id=cluster_id,
+                                  relative_to=dirname(this_filename)))
         f.write('<br>')
-    if profiles_info.flip:
-        f.write('<h2>Shapes before flipping:</h2>')
-        unflipped_shape_clusters = range(len(clustering_info.shape_clusters_unflipped))
-        for shape_cluster in unflipped_shape_clusters:
-            f.write('<a href='+make_filename(profiles_info, file_type="html_view", type_of_data="shape_cluster_unflipped", shape_number=shape_cluster)+'>')
-            f.write('<image src='+make_filename(profiles_info, file_type="boxplot", type_of_data="shape_cluster_unflipped", shape_number=shape_cluster)+'>')
-            f.write('</a>')
-    f.write('<h2>Shapes before merging:</h2>')
-    oversegmented_shape_clusters = range(len(clustering_info.shape_clusters_oversegmented))
-    for shape_cluster in oversegmented_shape_clusters:
-        f.write('<image src='+make_filename(profiles_info, file_type="boxplot", type_of_data="shape_cluster_oversegmented", shape_number=shape_cluster)+'>')
 
-    f.write('<br>')
-    f.write('</body>')
-    f.write('</html>')
+    footer = "</body></html>"
+    f.write(footer)
 
-
-def make_html_set_view(clustering_info, members, type_of_data, shape_number=None, group_number=None, do_gene_proximity=False):
+def _make_html_set_view(clustering_info, members, type_of_data, shape_number=None, group_number=None, do_gene_proximity=False):
     profiles_info = clustering_info.profiles_info
     filename = make_filename(profiles_info, "html_view", type_of_data, shape_number, group_number)
     f = open(filename, "w")
@@ -190,7 +140,7 @@ def make_html_set_view(clustering_info, members, type_of_data, shape_number=None
 
 
 
-def write_sets(clustering_info, do_gene_proximity=False):
+def _write_sets(clustering_info, do_gene_proximity=False):
 
     profiles_info = clustering_info.profiles_info
     peak_tag = profiles_info.peak_tag

@@ -2,12 +2,16 @@
 """ Generate profiles for testing CAGT  """
 import sys
 import os
-import argparse
 import numpy as np
 import scipy.stats as spstats
 import random
 _folder_path = os.path.split(os.path.abspath(__file__))[0]
 sys.path.append(_folder_path)
+sys.path.append(os.path.join('..', _folder_path))
+try:
+    import argparse
+except ImportError:
+    import src.argparse as argparse
 
 def generate_profiles(num_clusters, num_per_cluster, profile_length=100,
                       mode_val=40, spread_stdev_fraction=.03, noise_stdev_fraction=.1, **_):
@@ -69,7 +73,6 @@ def write_profiles_list_file(profile_filenames, filename):
 
 
 def main(args):
-
     cagt_filenames = ['%s%s.cagt' % (args.cagt_filename_prefix, i)
                      for i in range(args.num_files)]
 

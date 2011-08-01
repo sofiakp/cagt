@@ -2,10 +2,14 @@
 """ Runs a test of CAGT """
 import sys
 import os
-import argparse
 import uuid
 _folder_path = os.path.split(os.path.abspath(__file__))[0]
 sys.path.append(_folder_path)
+sys.path.append(os.path.join('..', _folder_path))
+try:
+    import argparse
+except ImportError:
+    import src.argparse as argparse
 
 import make_test_profiles
 

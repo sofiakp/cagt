@@ -18,7 +18,6 @@ from src.filenames import *
 class ClusteringInfo:
   def __init__(self, profiles_info):
     self.profiles_info = profiles_info
-    self.PD = None
     self.ids = None
     self.num_peaks = None
     self.peaks = None

@@ -32,6 +32,26 @@ from src.gene_proximity_cluster import *
 from src.ProfileData import ProfileData
 
 
+def rand_index(clustering1, clustering2):
+    agree = 0
+    disagree = 0
+    ids = clustering1.ids
+    for i in range(len(ids)):
+        for j in range(i+1, len(ids)):
+            c1_same = clustering1.index[ids[i]] == clustering1.index[ids[j]]
+            c2_same = clustering2.index[ids[i]] == clustering2.index[ids[j]]
+            if c1_same and c2_same:
+                agree += 1
+            elif (not c1_same) and (not c2_same):
+                agree += 1
+            else:
+                disagree += 1
+    return float(agree) / (agree + disagree)
+
+
+
+
+
 def log_profiles_info(profiles_info):
     logging.info("Some info about profiles_info: %s" % str(profiles_info))
     logging.info("filenames: %s ; %s" % (profiles_info.peak_filename, profiles_info.signal_filename ))
@@ -76,6 +96,7 @@ def main(args):
         gene_list_filename = args.gene_proximity
         get_genes_from_gencode_file(output_folder, gene_list_filename)
 
+
     try:
         for profiles_info in profiles_info_list:
             print "---------------------------------"
@@ -83,17 +104,14 @@ def main(args):
             logging.info("Starting %s...", str(profiles_info))
             # log_profiles_info(profiles_info)
             t0 = time()
+            PD = ProfileData(profiles_info)
             if args.cluster:
                 logging.info("starting clustering...")
                 t_cluster = time()
                 #cluster_profile(profiles_info)
                 clustering_info = ClusteringInfo(profiles_info)
-                PD = ProfileData(profiles_info)
-                clustering_info.PD = PD
-                group_by_magnitude(clustering_info)
-                cluster_then_merge(clustering_info)
-                del PD
-                del clustering_info.PD
+                group_by_magnitude(clustering_info, PD)
+                cluster_then_merge(clustering_info, PD)
                 clustering_info_dump(clustering_info)
                 logging.info("Time to cluster: %s", time() - t_cluster)
 
@@ -107,9 +125,16 @@ def main(args):
             if args.make_plots:
                 logging.info("starting make_plots...")
                 t_plots = time()
-                make_plots_for_profile(profiles_info)
+
+                if not os.path.isfile(make_plots_done_filename(profiles_info)):
+                    clustering_info = clustering_info_load(profiles_info)
+                    for clustering_result in clustering_info.clusterings:
+                        clustering_result.make_plots(PD)
+                    open(make_plots_done_filename(profiles_info),"w").close() # make a file with nothing in it
+
                 logging.info("Time to make plots: %s", time()-t_plots)
 
+            del PD
             logging.info("Total time for %s: %i", str(profiles_info), time()-t0)
     except SyntaxError, ImportError:
         raise
@@ -126,14 +151,11 @@ def main(args):
         logging.info("making html...")
         t_html = time()
 
-        if not os.path.isdir(make_html_views_foldername(profiles_info_list[0].output_folder)):
-            os.mkdir(make_html_views_foldername(profiles_info_list[0].output_folder))
-        make_html_view_summary(profiles_info_list)
+        make_html_view_summary(profiles_info_list, output_folder)
         for profiles_info in profiles_info_list:
             try:
                 clustering_info = clustering_info_load(profiles_info)
-                make_html_clustering_view(clustering_info)
-                write_sets(clustering_info, do_gene_proximity)
+                make_html_profile_view(clustering_info)
             except SyntaxError, ImportError:
                 raise
             except NameError, Exception:
@@ -143,14 +165,57 @@ def main(args):
                 sys.stderr.write(report)
                 logging.error(report)
 
-
-
-
-
-        make_all_html_views(profiles_info_list, do_gene_proximity)
         logging.info("Time to make html: %i", time()-t_html)
 
 
+    if args.test_stability:
+        for profiles_info in profiles_info_list:
+            PD = ProfileData(profiles_info)
+            clustering_info = ClusteringInfo(profiles_info)
+            group_by_magnitude(clustering_info, PD)
+            _, ctm_clustering1, _ = cluster_then_merge(clustering_info, PD)
+            _, ctm_clustering2, _ = cluster_then_merge(clustering_info, PD)
+            num_clusters = len(ctm_clustering1.partition)
+
+            norm_data = PD.high_signal_norm_data
+            ids = norm_data.ids
+
+            kmeans_assignments1 = k_cluster(norm_data, num_clusters=num_clusters, npass=args.npass, args=args)
+            kmeans_partition1 = assignments_to_clusters(kmeans_assignments1, norm_data.ids)
+            kmeans_clustering1 = ClusteringResult(ids, kmeans_partition1, profiles_info)
+
+            kmeans_assignments2 = k_cluster(norm_data, num_clusters=num_clusters, npass=args.npass, args=args)
+            kmeans_partition2 = assignments_to_clusters(kmeans_assignments2, norm_data.ids)
+            kmeans_clustering2 = ClusteringResult(ids, kmeans_partition2, profiles_info)
+
+            ctm_rand_index = rand_index(ctm_clustering1, ctm_clustering2)
+            kmeans_rand_index = rand_index(kmeans_clustering1, kmeans_clustering2)
+
+            print "For profiles info: %s" % profiles_info
+            print "C&M: %s" % ctm_rand_index
+            print "kmeans: %s" % kmeans_rand_index
+
+            # binary search for same number of clusters
+            #bottom = 0.0
+            #top = 1.0
+            #while (true):
+                #mid = (top + bottom) / 2
+
+                #hier_preclusters = [[id] for id in ids]
+                #hier_partition, _ = hcluster(norm_data, [[id] for id in ids], args, flipping=False, cluster_merge_correlation_cutoff)
+                #hier_clustering = ClusteringResult(ids, hier_partition, profiles_info)
+                #num_hier_clusters = len(hier_partition)
+
+                #if num_hier_clusters == num_ctm_clusters:
+                    #break
+                #elif num_hier_clusters > num_ctm_clusters:
+                    #bottom = mid
+                #else:
+                    #top = mid
+
+                #if abs(top-bottom) < .01:
+                    #print "Problem: couldn\'t find correlation_cutoff that yielded the right number of clusters"
+                    #break
 
 
 
@@ -168,6 +233,7 @@ if __name__ == '__main__':
     parser.add_argument('--make-plots', action='store_true', default=False, help='Tells CAGT to run in make-plots mode')
     parser.add_argument('--make-html', action='store_true', default=False, help='Tells CAGT to run in make-html mode')
     parser.add_argument('--gene-proximity', help='Tells CAGT to run in gene-proximity mode. This argument takes the location of a gene list file')
+    parser.add_argument('--test_stability', action='store_true', help='Tells CAGT to run in gene-proximity mode. This argument takes the location of a gene list file')
     parser.add_argument('--signal-wide-cluster', action='store_true', default=False, help='Tells CAGT to run in signal-wide-cluster mode (not recommended)')
     parser.add_argument('-d', '--debug', action='store_true', default=False, help='Tells CAGT to run in debug mode (not recommended)')
     parser.add_argument('output_dir', help="All CAGT's output goes here. Use a different output_dir for each run")
