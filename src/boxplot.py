@@ -17,7 +17,7 @@ from src.rpy_matrix_conversion import np_matrix_to_r
 
 
 def make_dimnames(profiles_info, ids, data):
-    space_between_colnames = clustering_info.profiles_info.args.space_between_colnames
+    space_between_colnames = profiles_info.args.space_between_colnames
 
     rownames = ids
 
@@ -71,17 +71,15 @@ def boxplot_simple(clustering_result, PD, cluster_id):
     make_horizontal_line_at_origin = clustering_result.boxplot_make_horizontal_line_at_origin(cluster_id)
     ylims = clustering_result.boxplot_ylims(cluster_id)
     ylab = clustering_result.ylab(cluster_id)
-    filename = make_boxplot_filename(clustering_result, cluster_id)
-    dimnames = make_dimnames(clustering_result.profiles_info, ids, data)
+    filename = make_filename('cluster', 'boxplot',
+                             clustering_result=clustering_result,
+                             cluster_id=cluster_id)
     data = clustering_result.data_for_plotting(PD, cluster_id)
+    dimnames = make_dimnames(clustering_result.profiles_info, ids, data)
 
-    try:
-        boxplot(clustering_info, ids, filename=filename, title=title, ylim=ylims, flipped=flipped,\
-        make_horizontal_line_at_origin=make_horizontal_line_at_origin,
-        make_vertical_line_in_middle=make_vertical_line_in_middle, normalize=normalize)
-    except Exception, error:
-        log_error('boxplot_simple', {'clustering_result': clustering_result, 'PD': PD, 'cluster_id': cluster_id})
-        print "Hit error while plotting %s -- skipping this plot (see logs.txt for details)"
+    boxplot(data, ids, dimnames, filename=filename, title=title, ylim=ylims,
+            make_horizontal_line_at_origin=make_horizontal_line_at_origin,
+            make_vertical_line_in_middle=make_vertical_line_in_middle)
 
     return
 
@@ -94,6 +92,8 @@ def boxplot(data, ids, dimnames,
             ylim=[-4,4], ylab="Normalized Signal", xlab="Relative distance to TF binding site",
             flipped=None, normalize=False,
             make_horizontal_line_at_origin = False, make_vertical_line_in_middle = True):
+
+    data_to_plot = data
 
     # manually garbage collect
     gc.collect()

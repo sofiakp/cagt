@@ -8,6 +8,7 @@
 # they're written.
 ##############################################
 
+import pdb
 
 from time import time
 from random import randrange
@@ -18,33 +19,66 @@ from os.path import join
 
 
 def make_filename(type, file_type, relative_to=None,
-                  output_folder=None, profiles_info=None, clustering_info=None,
-                  cluster_id=None):
+                  output_folder=None, profiles_info=None,
+                  clustering_result=None, cluster_id=None):
     assert(type in ['all', 'profile', 'clustering_result', 'cluster'])
+    if not relative_to is None:
+        #pdb.set_trace()
+        pass
 
     if type == 'all':
         assert(not output_folder is None)
         foldername = output_folder
         assert(file_type in ['html_view_summary'])
+        if file_type == 'html_view_summary':
+            filename = 'html_view_summary.html'
 
     elif type == 'profile':
+        assert(not profiles_info is None)
         assert(file_type in ['folder', 'plots_done', 'html_view'])
         if file_type == 'folder':
             foldername = profiles_info.output_folder
             filename = profiles_info.handle()
         else:
-            foldername = make_filename('profile', 'folder', relative_to)
-            if type == 'html_view':
+            foldername = make_filename('profile', 'folder',
+                                       profiles_info=profiles_info,
+                                       output_folder=profiles_info.output_folder)
+            if file_type == 'html_view':
                 filename = 'html_view.html'
-            elif type == 'plots_done':
+            elif file_type == 'plots_done':
                 filename = 'plots_done'
 
     elif type == 'clustering_result':
-        assert(file_type in ['assignments', 'html_view'])
-        pass
+        assert(not clustering_result is None)
+        profiles_info = clustering_result.profiles_info
+        assert(file_type in ['folder', 'assignments', 'html_view'])
+        if file_type == 'folder':
+            foldername = make_filename('profile', 'folder', profiles_info=profiles_info)
+            filename = clustering_result.handle()
+        else:
+            foldername = make_filename('clustering_result', 'folder',
+                                       profiles_info=profiles_info, clustering_result=clustering_result)
+            if file_type == 'assignments':
+                filename = '%s_assignments.txt' % clustering_result.handle()
+            elif file_type == 'html_view':
+                filename = '%s_html_view.html' % clustering_result.handle()
 
     elif type == 'cluster':
-        pass
+        assert(not cluster_id is None)
+        assert(not clustering_result is None)
+        assert(file_type in ['boxplot'])
+        foldername = make_filename('clustering_result', 'folder',
+                                   clustering_result=clustering_result)
+        cr_handle = clustering_result.handle()
+        oi_handle = clustering_result.cluster_handle(cluster_id)
+        if file_type == 'boxplot':
+            identifier = 'boxplot'
+            extension = 'png'
+
+        filename = "%s_%s.%s" % (identifier, oi_handle, extension)
+
+    if (relative_to is None) and (not os.path.isdir(foldername)):
+        os.makedirs(foldername)
 
     path = join(foldername, filename)
 
@@ -53,61 +87,6 @@ def make_filename(type, file_type, relative_to=None,
     else:
         return path
 
-
-
-def make_profile_filename(profiles_info, type, relative_to=None):
-    assert(type in ['folder', 'html_view', 'plots_done'])
-    if type == 'folder':
-        filename = profiles_info.handle()
-        foldername = profiles_info.output_folder
-    else:
-        foldername = make_profile_filename(profiles_info, 'folder', relative_to=relative_to)
-        if type == 'html_view':
-            filename = 'profile_html_view.html'
-        elif type == 'plots_done'
-            filename = 'plots_done'
-
-    path = join(foldername, filename)
-
-    if not relative_to is None:
-        return os.path.relpath(path, relative_to)
-    else:
-        return path
-
-def make_clustering_result_filename(clustering_result, type, relative_to=None):
-    foldername = make_profile_filename(clustering_result.profiles_info,
-                                       'folder', relative_to=relative_to)
-
-    cr_handle = clustering_result.handle()
-
-    assert(type in ['html_view', 'assignments'])
-    if type == 'html_view':
-        identifier = 'html_view'
-        extension = '.png'
-    elif type == 'assignments'
-        identifier = 'assignments'
-        extension = '.txt'
-
-
-def make_cluster_filename(clustering_result, type, cluster_id, relative_to=None):
-    foldername = make_profile_filename(clustering_result.profiles_info,
-                                       'folder', relative_to=relative_to)
-
-    cr_handle = clustering_result.handle()
-    oi_handle = clustering_result.cluster_id_handle(cluster_id)
-
-    assert(type in ['boxplot'])
-    if type == 'boxplot':
-        identifier = 'boxplot'
-        extension = '.png'
-
-    filename = "%s_%s_%s%s" % (identifier, cr_handle, oi_handle, extension)
-
-    path = join(foldername, filename)
-    if not relative_to is None:
-        return os.path.relpath(path, relative_to)
-    else:
-        return path
 
 
 def make_profiles_foldername(profiles_info):
@@ -122,9 +101,6 @@ def make_profiles_pair_foldername(profiles_info_pair):
 
 def make_log_filename(output_folder):
     return os.path.join(output_folder, "log.txt")
-
-def make_html_views_foldername(output_folder):
-    return os.path.join(output_folder, "html_views")
 
 def make_genes_filename(output_folder):
     if not os.path.isdir(os.path.join(output_folder, 'tmp')):
@@ -141,33 +117,8 @@ def make_gene_proximity_filename(profiles_info):
     return os.path.join(make_profiles_foldername(profiles_info), "gene_proximity.txt")
 
 def make_members_filename(clustering_result, cluster_id):
-    filename = "%s_members.txt" % clustering_result.filename_handle(cluster_id)
+    filename = "%s_members.txt" % clustering_result.cluster_handle(cluster_id)
     return join(make_profiles_foldername(clustering_result.profiles_info), filename)
 
-def make_boxplot_filename(clustering_result, cluster_id):
-    filename = "%s_boxplot.png" % clustering_result.filename_handle(cluster_id)
-    return join(make_profiles_foldername(clustering_result.profiles_info), filename)
-
-def make_html_view_summary_filename():
-    """......................"""
-    return ""
-
-def make_clustering_result_filename(clustering_result, relative_to=None):
-    """..."""
-    return ""
-
-def make_filename(profiles_info, file_type, type_of_data,\
-shape_number=None, group_number=None):
-
-    if file_type == "html_view" and type_of_data == "summary":
-        foldername = profiles_info.output_folder
-    else:
-        foldername = make_profiles_foldername(profiles_info)
-
-    type_of_data_name = type_of_data
-    extension = ".png"
-
-    filename = os.path.join(foldername, file_type + "_" + type_of_data_name + extension)
-    return filename
 
 

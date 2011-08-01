@@ -27,7 +27,7 @@ class ProfileInfo:
         return self.signal_tag + " around " + self.peak_tag + " in " + self.cell_line
 
     def handle(self):
-        return "%s_around_%s" % (self.signal_filename, self_peak_filename)
+        return "%s_around_%s" % (self.signal_filename, self.peak_filename)
 
 
 class ProfileInfoPair:

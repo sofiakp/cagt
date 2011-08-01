@@ -1,6 +1,7 @@
 import sys
 import traceback
 from time import time
+import logging
 
 import numpy as np
 
@@ -31,7 +32,7 @@ class MatrixMap:
         return MatrixMap(self.data[indices,:], row_ids)
 
     def __getattr__(self, name):
-        return data.__getattr__[name]
+        return self.data.__getattribute__(name)
 
     def set_row(self, row_id, value):
         self.data[self.id_to_index[row_id],:] = value
@@ -45,7 +46,7 @@ class logTime(object):
 
     def __call__(self, *args, **kwargs):
         t = time()
-        f(*args, **kargs)
+        self.f(*args, **kwargs)
         logging.debug("Took %s seconds for %s(%s , %s)" %
                       (time() - t, self.name, args, kwargs))
 

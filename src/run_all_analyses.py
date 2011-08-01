@@ -21,7 +21,7 @@ def run_all_analyses():
 
 
 
-def make_plots_for_profile(profiles_info):
+def _make_plots_for_profile(profiles_info):
 	try:
 		t0 = time()
 		if not os.path.isfile(make_plots_done_filename(profiles_info)):
@@ -45,12 +45,11 @@ def make_plots_for_profile(profiles_info):
 
 
 
-def make_plots_for_pair(clustering_info):
+def _make_plots_for_pair(clustering_info):
 	# if not os.path.isdir(make_aggregation_plots_foldername(peak_tag, signal_tag, clustering_info.output_id)):
 #		print "making folder:", make_aggregation_plots_foldername(peak_tag, signal_tag, clustering_info.output_id)
 		# os.mkdir(make_aggregation_plots_foldername(peak_tag, signal_tag, clustering_info.output_id))
 		# assert(os.path.isdir(make_aggregation_plots_foldername(peak_tag, signal_tag, clustering_info.output_id)))
-
 	boxplot_simple(clustering_info, "all")
 	boxplot_simple(clustering_info, "low_signal")
 	boxplot_simple(clustering_info, "high_signal")
@@ -71,4 +70,11 @@ def make_plots_for_pair(clustering_info):
 	for shape_cluster in shape_clusters_oversegmented:
 		boxplot_simple(clustering_info, "shape_cluster_oversegmented", shape_number=shape_cluster)
 
+
+
+
+
+def make_all_html_views(clustering_infos):
+    for clustering_info in clustering_infos:
+        pass
 
