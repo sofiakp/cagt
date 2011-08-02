@@ -80,7 +80,7 @@ def read_profiles_list_file(filename, output_id, args):
     profiles = []
     for line in f:
         profiles.append(ProfileInfo(line, output_id, args))
-        return profiles
+    return profiles
 
 
 def get_low_signal_profiles(data, low_signal_cutoff_value, low_signal_cutoff_quantile):
