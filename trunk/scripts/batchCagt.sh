@@ -97,7 +97,7 @@ while read i
   fi
 
   # For FAIRE data
-  if [[ ${signalTag} == 'DNASE' ]]
+  if [[ ${signalTag} == 'FAIRE' ]]
       then 
       lowSigCutoff='2'
       ylim='0,30'
