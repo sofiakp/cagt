@@ -93,10 +93,9 @@ def cluster_then_merge(clustering_info):
         clustering_info.shape_clusters = flipped_clusters
         clustering_info.flipped = flipped
     else:
-        clustering_info.shape_cluster = unflipped_clusters
+        clustering_info.shape_clusters = unflipped_clusters
         clustering_info.flipped = []
 
-    print "number of clusters after merging:", len(flipped_clusters)
 
 
 # From http://yongsun.me/tag/python/
