@@ -287,7 +287,7 @@ def k_cluster(data, num_clusters, npass, args, dist='c'):
         reverse_map = {}
         for i in range(len(allocated_numbers)):
             reverse_map[allocated_numbers[i]] = i
-        assignments = map(lambda x: reverse_map[x], allocated_numbers)
+        assignments = map(lambda x: reverse_map[x], assignments)
 
     return assignments
 
