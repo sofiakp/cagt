@@ -2,7 +2,7 @@ function plotParams = plotClusteringResults(X, results, plotParams, plotDir, clo
 %PLOTCLUSTERINGRESULTS Make plots from the output of clusterSignal.
 %   PLOTPARAMS = PLOTCLUSTERINGRESULTS(X, RESULTS, PLOTPARAMS, PLOTDIR)
 %
-% Author: sofiakp
+% Author: Sofia Kyriazopoulou (sofiakp@stanford.edu)
 
 if ~isfield(plotParams, 'medianParams') || ~isfield(plotParams.medianParams, 'lineWidth')
     plotParams.medianParams.lineWidth = 0.8;

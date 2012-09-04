@@ -1,25 +1,28 @@
 function [results, params] = clusterSignal(X, params)
-%CLUSTERSIGNAL Clusters the signal tracks
-%   RESULTS = CLUSTERSIGNAL(X, PARAMS) partitions the points in
-%   the N-by-P data matrix X into clusters using k-means followed by an optional round of hierarchical agglomerative 
-%   clustering to merge similar clusters. Rows of X correspond to signal
-%   tracks, columns correspond to signal at consecutive positions. During
-%   agglomerative clustering, signals can be flipped if that leads to a
-%   better clustering. This intuitively implies that the directionality of
-%   signal can be ignored. PARAMS is a structure with parameters of the
-%   clustering. 
+%CLUSTERSIGNAL Clusters a signal track
+%
+%   RESULTS = CLUSTERSIGNAL(X, PARAMS) partitions the rows of X into
+%   clusters using k-means (or k-medians) followed by an optional round of
+%   hierarchical agglomerative clustering to merge similar clusters. If the
+%   signal has been extracted in a region of P bp around each of N loci of
+%   interest, then X should be an N-by-P matrix. During agglomerative
+%   clustering, signals can be flipped if that leads to a better
+%   clustering. This intuitively implies that the directionality of signal
+%   can be ignored. PARAMS is a structure with parameters of the
+%   clustering.
 %
 %   PARAMS fields:
-%      kmeansParams: structure with parameters of the k-means clustering.
-%      See SIMPLEKMEANS for details.
+%
+%      kmeansParams: structure with parameters of the k-means/medians clustering.
+%      See simpleKmeans for details.
 %
 %      hcParams: structure with parameters of the hierarchical
-%      agglomerative clustering. See HIERARCHICALCLUST for details. If this
+%      agglomerative clustering. See hierarchicalClust for details. If this
 %      is omitted from PARAMS, then agglomerative clustering will be
 %      skipped.
 %
 %      distParams: structure specifying the distance metric to use and will
-%      be passed to SIMPLEKMEANS (and HIERARCHICALCLUST).
+%      be passed to simpleKmeans (and hierarchicalClust).
 %
 %      nanTreat: how to treat NaN's in X. Possible values:
 %         'zero': replace with zeros (default)
@@ -38,9 +41,8 @@ function [results, params] = clusterSignal(X, params)
 %      is 0.
 %
 %      display: Determines how much information will be output during the
-%      clustering. See also SIMPLEKMEANS and HIERARCHICALCLUST.
-%
-%      outlierPrc (EXPERIMENTAL)
+%      clustering. Set to '' to disable all output. See also simpleKmeans
+%      and hierarchicalClust.
 %
 %   RESULTS fields:
 %
@@ -59,21 +61,20 @@ function [results, params] = clusterSignal(X, params)
 %      kmeansInputInd: boolean vector of size N x 1 with indicators of the
 %      observations that passed all the above filters.
 %
-%      kmeansResults: structure returned by SIMPLEKMEANS
+%      kmeansResults: structure returned by simpleKmeans.
 %
-%      hcInputInd (only if agglomeration is performed): boolean vector of size N x 1 with indicators of the
-%      observations that were input to agglomerative clustering.
+%      hcInputInd (only if agglomeration is performed): boolean vector of
+%      size N x 1 with indicators of the observations that were input to
+%      agglomerative clustering.
 %
-%      hcResults (only if agglomeration is performed): structure returned by HIERARCHICALCLUST.
+%      hcResults (only if agglomeration is performed): structure returned
+%      by hierarchicalClust.
 %
-%      outlierInd (EXPERIMENTAL): boolean vector of size N x 1 indicating
-%      potential outliers.
+%   [RESULTS, PARAMS] = CLUSTERSIGNAL(X, PARAMS) also returns the set of
+%   all parameters used for clustering (which is the input PARAMS with all
+%   default values added).
 %
-%   [RESULTS, PARAMS] = CLUSTERSIGNAL(X, PARAMS) also returns the params
-%   structure with default values of the arguments explicitly added as
-%   fields in the structure.
-%
-%   Author: sofiakp
+%   Author: Sofia Kyriazopoulou (sofiakp@stanford.edu)
 
 validateReal(X, 'X');
 [numInitEx, p] = size(X);
@@ -138,14 +139,6 @@ if ~isfield(params, 'outlierPrc')
 end
 outlierPrc = params.outlierPrc;
 
-% if isfield(params, 'adjustIndices')
-%     if ~islogical(params.adjustIndices)
-%         error('clusterSignal:InvalidArgument', '''adjustIndices'' must be logical');
-%     end
-% else
-%     params.adjustIndices = true;
-% end
-
 if ~isempty(display)
     fprintf('Number of examples: %d\nSignal length: %d\n', numInitEx, p);
 end
@@ -154,22 +147,6 @@ end
 
 % Find rows with too many nans and remove them.
 maxNanInd = sum(isnan(X), 2) > maxNan;
-%maxConsNanInd = true(numInitEx, 1);
-
-%for i = 1:numInitEx,
-%    maxLen = isnan(X(i, 1));
-%    for j = 2:p,
-%        if ~isnan(X(i, j))
-%            maxLen = 0;
-%        else
-%            maxLen = maxLen + 1;
-%            if maxLen > maxConsNan
-%                break
-%            end
-%        end
-%    end
-%    maxConsNanInd(i) = maxLen <= maxConsNan; 
-%end
 
 results.maxNanInd = maxNanInd;
 kmeansInputInd = ~maxNanInd;
@@ -177,8 +154,6 @@ newSignal = X(kmeansInputInd, :);
 
 if ~isempty(display)
     fprintf('Examples with <= %d missing values: %d\n', maxNan, sum(~maxNanInd));
-    %fprintf('Examples with <= %d consecutive missing values: %d\n',
-    %maxConsNan, sum(maxConsNanInd));
 end
 
 if strcmp(nanTreat, 'interpolate')
@@ -191,10 +166,6 @@ if strcmp(nanTreat, 'interpolate')
         newSignal(i, nanInd) = interp1(find(~nanInd), newSignal(i, ~nanInd), find(nanInd));
     end
 end
-
-% Get the maximum of the two cutoffs.
-%lowSignalThres = max(lowSignalCut, prctile(signalMean, lowSignalPrc));
-% meanValInd = signalMean >= lowSignalThres;
 
 % Get low signal profiles, after interpolating but before
 % replacing NaNs (or normalizing). 
@@ -274,23 +245,6 @@ if merge && (~isfield(params.hcParams, 'k') || params.hcParams.k < size(results.
 else
     finalResults = results.kmeansResults;
 end
-
-%%%%%%%%%%%%%%%%%%%%%%%%% OUTLIER DETECTION %%%%%%%%%%%%%%%%%%%%%%%%%
-
-% outliers are detected but not removed from results
-% outlier detection based on median absolute deviation
-outlierInd = false(size(finalResults.data, 1), 1);
-for i = 1:size(finalResults.centroids, 1)
-    members = finalResults.idx == i;
-    if ~isempty(members)
-        dev = abs(finalResults.data(members, :) - repmat(finalResults.centroids(i, :), sum(members), 1));
-        dev = dev ./ (1.4826 * repmat(nanmedian(dev), sum(members), 1));
-        outlierInd(members) = prctile(dev, outlierPrc, 2) > 3;
-    end
-end
-
-results.outlierInd = false(numInitEx, 1);
-results.outlierInd(results.hcInputInd) = outlierInd;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%% HELPER FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -317,68 +271,3 @@ end
 function b = dummyVal(x)
 b = true;
 end
-
-
-%parser = inputParser;
-%parser.addRequired('X', @(x) validateReal(x, 'X'));
-%parser.addOptional('k', 0, @dummyVal);
-% pre-processing parameters
-%parser.addParamValue('maxNan', -1);
-%parser.addParamValue('maxConsNan', -1);
-%parser.addParamValue('lowSignalCut', 0);
-%parser.addParamValue('lowSignalPrc', 5);
-% k-means parameters
-%parser.addParamValue('distance', 'sqeuclidean', @(x) validateRange(x, {'sqeuclidean', 'correlation', 'xcorr'}, 'distance'));
-%parser.addParamValue('avgFun', 'mean', @(x) validateRange(x, {'mean', 'median'}, 'avgFun'));
-%parser.addParamValue('start', 'plus', @dummyVal);
-%parser.addParamValue('replicates', [], @(x) validateReal(x, 'replicates'));
-%parser.addParamValue('emptyaction', 'error', @(x) validateRange(x, {'error', 'drop', 'singleton'}, 'emptyaction'));
-%parser.addParamValue('maxiter', 100, @dummyVal);
-%parser.addParamValue('maxlag', 0, @dummyVal);
-%parser.addParamValue('display', '', @(x) validateRange(x, {'', 'iter', 'final'}, 'display'));
-% merging parameters
-%parser.addParamValue('merge', true, @(x) islogical(x));
-%parser.addParamValue('flip', true, @(x) islogical(x));
-%parser.addParamValue('mergeK', 1, @dummyVal);
-%parser.addParamValue('mergeDist', Inf, @dummyVal);
-% outlier detection parameters
-%parser.addParamValue('outlierPrc', 75, @dummyVal);
-
-%parser.parse(X, varargin{:});
-
-%k = parser.Results.k;
-%distance = parser.Results.distance;
-%avgFun = parser.Results.avgFun;
-%start = parser.Results.start;
-%reps = parser.Results.replicates;
-%emptyact = parser.Results.emptyaction;
-%maxit = parser.Results.maxiter;
-%maxlag = parser.Results.maxlag;
-%display = parser.Results.display;
-% Maximum acceptable number of NaNs
-%maxNan = parser.Results.maxNan;
-% Maximum length of consecutive NaNs
-%maxConsNan = parser.Results.maxConsNan;
-%lowSignalCut = parser.Results.lowSignalCut;
-%lowSignalPrc = parser.Results.lowSignalPrc;
-
-%merge = parser.Results.merge;
-%flip = parser.Results.flip;
-%mergeK = parser.Results.mergeK;
-%mergeDist = parser.Results.mergeDist;
-
-%outlierPrc = parser.Results.outlierPrc;
-
-%[numInitEx, p] = size(X);
-
-%if ~isint(maxConsNan)
-%    error('clusterSignal:InvalidArgument', '''maxConsNan'' must be an integer');
-%elseif maxConsNan > p
-%    error('clusterSignal:InvalidArgument', '''maxConsNan'' cannot be greater than the length of the signal');
-%elseif maxConsNan < 0
-%    maxConsNan = ceil(0.3 * p);
-%end
-
-%if ~isint(mergeK) || mergeK < 1
-%    error('clusterSignal:InvalidArgument', '''maxiter'' must be a positive integer');
-%end

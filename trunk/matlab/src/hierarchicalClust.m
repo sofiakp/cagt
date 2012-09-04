@@ -1,5 +1,6 @@
 function results = hierarchicalClust(clustResults, params, distParams)
 %HIERARCHICALCLUST Hierarchical clustering of clusters with flipping.
+%
 %   RESULTS = HIERARCHICALCLUST(CLUSTRESULTS, PARAMS, DISTPARAMS) Performs
 %   hierarchical clustering of a pre-computed set of clusters given in the
 %   struct CLUSTRESULTS. PARAMS is a struct with parameters for the hierarchical
@@ -111,7 +112,7 @@ function results = hierarchicalClust(clustResults, params, distParams)
 %   and flipping is over, the new distances and optimal lags are
 %   recomputed.
 %
-%   Author: sofiakp
+%   Author: Sofia Kyriazopoulou (sofiakp@stanford.edu)
 
 if ~all(isfield(clustResults, {'data', 'idx', 'centroids'}))
     error('hierarchicalClust:InvalidArgument', ...
@@ -171,27 +172,6 @@ validateRange(display, {'', 'iter', 'final'}, 'display');
 validateReal(lags, 'lags');
 validateReal(centroids, 'centroids');
 validateReal(idx, 'idx');
-
-%parser = inputParser;
-%parser.addRequired('X', @(x) validateReal(x, 'X'));
-%parser.addRequired('idx', @(x) validateReal(x, 'idx'));
-%parser.addRequired('centroids', @(x) validateReal(x, 'centroids'));
-%parser.addParamValue('flip', true, @(x) islogical(x));
-%parser.addParamValue('distance', 'sqeuclidean', @(x) validateRange(x, {'sqeuclidean', 'correlation', 'xcorr'}, 'distance'));
-%parser.addParamValue('avgFun', 'mean', @(x) validateRange(x, {'mean', 'median'}, 'avgFun'));
-%parser.addParamValue('numClust', 1, @dummyVal);
-%parser.addParamValue('maxDist', Inf, @dummyVal);
-%parser.addParamValue('lags', [], @(x) validateReal(x, 'lags'));
-%parser.addParamValue('maxlag', 0, @dummyVal);
-
-%parser.parse(X, idx, centroids, varargin{:});
-%allowFlip = parser.Results.flip;
-%distance = parser.Results.distance;
-%avgFun = parser.Results.avgFun;
-%numClust = parser.Results.numClust;
-%maxDist = parser.Results.maxDist;
-%lags = parser.Results.lags;
-%maxlag = parser.Results.maxlag;
 
 % initial number of clusters
 K = size(centroids, 1);

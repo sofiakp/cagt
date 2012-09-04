@@ -1,5 +1,6 @@
 function [centroids, counts] = gcentroids(X, index, clusts, avgFun, recenter, lags)
 %GCENTROIDS Centroids and counts stratified by cluster.
+%
 %   [CENTROIDS, COUNTS] = GCENTROIDS(X, INDEX, CLUSTS, AVGFUN, RECENTER]
 %   returns the centroids for the specified clusters using the method
 %   specified by AVGFUN. X should be an n-by-p matrix with n examples and p
@@ -19,7 +20,7 @@ function [centroids, counts] = gcentroids(X, index, clusts, avgFun, recenter, la
 %   LAGS]. X is shifted according to LAGS before the centroids are
 %   computed. LAGS should be a vector of size n.
 %
-%   Author: sofiakp
+%   Author: Sofia Kyriazopoulou (sofiakp@stanford.edu)
 
 % number of features
 p = size(X, 2);
