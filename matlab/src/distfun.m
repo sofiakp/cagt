@@ -1,8 +1,10 @@
 function [D, bestLags] = distfun(params, X, Y)
 %DISTFUN Calculate point to cluster centroid distances.
-%   D = DISTFUN(PARAMS, X, Y) computes the distance between each
-%   row of X and each row of Y. If X is an n-by-p matrix and Y is an m-by-p
-%   matrix, then D will be n-by-m. PARAMS is a structure with parameters determining how the distance will be computed.
+%
+%   D = DISTFUN(PARAMS, X, Y) computes the distance between each row of X
+%   and each row of Y. If X is an n-by-p matrix and Y is an m-by-p matrix,
+%   then D will be n-by-m. PARAMS is a structure with parameters
+%   determining how the distance will be computed.
 %
 %   PARAMS fields:
 %      distance: Distance function, in P-dimensional space, that KMEANS
@@ -28,7 +30,7 @@ function [D, bestLags] = distfun(params, X, Y)
 %   that maximizes the cross correlation for each pair of rows of X and Y.
 %   If DIST is not xcorr, this will be all zeros.
 %
-%   Author: sofiakp
+%   Author: Sofia Kyriazopoulou (sofiakp@stanford.edu)
 
 if ~isfield(params, 'distance')
     distance = 'sqeuclidean';

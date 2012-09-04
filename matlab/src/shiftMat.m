@@ -1,7 +1,7 @@
 function X = shiftMat(Xin, lags)
 % X = SHIFTMAT(XIN, LAGS) Shifts the i-th row of XIN by LAGS(i).
 % 
-% Author: sofiakp
+% Author: Sofia Kyriazopoulou (sofiakp@stanford.edu)
 
 X = ones(size(Xin)) * NaN;
 for i = 1:size(X, 1)

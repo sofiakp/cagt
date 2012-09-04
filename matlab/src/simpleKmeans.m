@@ -1,12 +1,14 @@
 function results = simpleKmeans(X, params, distParams)
-%SIMPLEKMEANS K-means clustering. Based on the MathWorks KMEANS.
-%   RESULTS = SIMPLEKMEANS(X, PARAMS, DISTPARAMS) partitions the points in
-%   the N-by-P data matrix X into clusters.  This partition minimizes the
+%SIMPLEKMEANS k-means or k-medians clustering.
+%
+%   RESULTS = SIMPLEKMEANS(X, PARAMS, DISTPARAMS) partitions the rows of
+%   an N-by-P data matrix X into clusters.  This partition minimizes the
 %   sum, over all clusters, of the within-cluster sums of
-%   point-to-cluster-centroid distances.  Rows of X correspond to points,
-%   columns correspond to variables. PARAMS is a struct with the parameters
+%   point-to-cluster-centroid distances. PARAMS is a struct with the parameters
 %   for the clustering. DISTPARAMS is a structure with the parameters that
-%   determine the distance function that will be used for clustering.
+%   determine the distance function that will be used for clustering. Most
+%   the input parameters were chosen to match the parameters of the
+%   standard kmeans function of MATLAB.
 %   RESULTS is a structure with information about the resulting clusters.
 % 
 %   PARAMS fields:
@@ -41,13 +43,13 @@ function results = simpleKmeans(X, params, distParams)
 %          'iter'            - Output at each iteration
 %          'final'           - Output only after the last iteration.
 %
-%      online: Flag indicating whether an "on-line
-%      update phase should be performed in addition to a "batch update" phase.  The on-line phase
+%      online: Flag indicating whether an "on-line update phase should be
+%      performed in addition to a "batch update" phase.  The on-line phase
 %      can be time consuming for large data sets, but guarantees a solution
-%      that is a local minimum of the distance criterion, i.e., a partition of
-%      the data where moving any single point to a different cluster increases
-%      the total sum of distances.  NOT SUPPORTED YET. Logical, default is
-%      false.
+%      that is a local minimum of the distance criterion, i.e., a partition
+%      of the data where moving any single point to a different cluster
+%      increases the total sum of distances.  NOT SUPPORTED YET. Logical,
+%      default is false.
 %
 %   DISTPARAMS fields:
 %
@@ -92,9 +94,9 @@ function results = simpleKmeans(X, params, distParams)
 %      bestDist: N x 1 vector with the distance of each observation from
 %      the closest centroid
 %
-%   See also the MathWorks KMEANS.
+%   See also kmeans.
 %
-%   Author: sofiakp
+%   Author: Sofia Kyriazopoulou (sofiakp@stanford.edu)
 
 if isfield(params, 'k')
     k = params.k; 
@@ -160,19 +162,6 @@ validateRange(avgFun, {'mean', 'median'}, 'avgFun');
 validateReal(reps, 'replicates');
 validateRange(emptyact, {'error', 'drop', 'singleton'}, 'emptyaction');
 validateRange(display, {'', 'iter', 'final'}, 'display');
-
-%parser = inputParser;
-%parser.addRequired('X', @(x) validateReal(x, 'X'));
-%parser.addOptional('k', 0, @dummyVal);
-%parser.addParamValue('distance', 'sqeuclidean', @(x) validateRange(x, {'sqeuclidean', 'correlation', 'xcorr'}, 'distance'));
-%parser.addParamValue('avgFun', 'mean', @(x) validateRange(x, {'mean', 'median'}, 'avgFun'));
-%parser.addParamValue('start', 'plus', @dummyVal); % will validate later
-%parser.addParamValue('replicates', [], @(x) validateReal(x, 'replicates'));
-%parser.addParamValue('emptyaction', 'error', @(x) validateRange(x, {'error', 'drop', 'singleton'}, 'emptyaction'));
-%parser.addParamValue('maxiter', 100, @dummyVal);
-%parser.addParamValue('maxlag', 0, @dummyVal);
-%parser.addParamValue('display', '', @(x) validateRange(x, {'', 'iter', 'final'}, 'display'));
-%parser.parse(X, varargin{:});
 
 % Remove rows with missing data
 nanRowInd = any(isnan(X), 2);

@@ -1,6 +1,7 @@
-function writeTextResults(outfile, results, intervalData, names, adj, clusterInfo)
-%WRITETEXTRESULTS Creates bed output of clustering results.
-%   WRITETEXTRESULTS(OUTFILE, RESULTS, INTERVALDATA, NAMES) creates a bed
+function writeTextResults(outfile, results, intervalData, names, adj)
+%WRITETEXTRESULTS Creates BED-like output of clustering results.
+%
+%   WRITETEXTRESULTS(OUTFILE, RESULTS, INTERVALDATA, NAMES) creates a BED
 %   file OUTFILE with clustering results for the regions in INTERVALDATA.
 %   OUTFILE is the path of the output file. RESULTS is a structure returned
 %   from CLUSTERSIGNAL. INTERVALDATA is a stucture with fields 'chr',
@@ -12,10 +13,10 @@ function writeTextResults(outfile, results, intervalData, names, adj, clusterInf
 %   the following fields:
 %      - flipping indicator: 1 if the region was flipped during agglomerative
 %      clustering, 0 otherwise
-%      - k-means cluster index
+%      - k-means/medians cluster index
 %      - index of agglomerated cluster
 %
-%   Author: sofiakp
+%   Author: Sofia Kyriazopoulou (sofiakp@stanford.edu)
 
 finalInd = results.hcInputInd;
 oversegIdx = zeros(size(finalInd));
@@ -47,8 +48,7 @@ for i = 1:length(finalInd)
         s = ['.\t.\t.\t', name, '.\t.\t'];
     end
     
-    %fprintf(f, '%s\t%d\t%d\t%d\n', s, flippedInd(i), oversegIdx(i), clusterIdx(i));
-    fprintf(f, '%s\t%d\t%d\t%d\t%s\t%s\n', s, flippedInd(i), oversegIdx(i), clusterIdx(i), char(clusterInfo.cellLine(i)), char(clusterInfo.targetType(i)));
+    fprintf(f, '%s\t%d\t%d\t%d\n', s, flippedInd(i), oversegIdx(i), clusterIdx(i));
 end
 fclose(f);
 end
