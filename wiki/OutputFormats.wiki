@@ -1,13 +1,16 @@
-#summary One-sentence summary of this page.
+#summary Formats of output files.
 #labels Featured
 
-= Introduction =
+===mat files===
+{{{cagt}}} writes all the clustering results in a {{{.mat}}} file. See the documentation of {{{clusterSignal}}} for a description of the contents of this file. {{{cagt}}} also writes all input parameters (including those that were set automatically to default values) in a separate {{{.mat}}} file for future reference.
 
-TODO
+===Text files===
+{{{cagt}}} also writes the clustering results in two text files: a [OutputFormats#BED_files BED-like] file that gives the cluster to which each input signal was assigned; and a {{{clusterData.txt}}} file which gives the mean signal in each cluster. 
 
-= Details =
+If you don't plan to use the the text files you can skip writing them, using the {{{bed}}} and {{{txt}}} options of the code. This will save time and storage space.
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+====BED files====
+The first 6 columns of this file follow the standard [http://genome.ucsc.edu/FAQ/FAQformat.html#format1 BED] format. Columns 7-9 contain respectively:
+  * *flip indicator*: is 1 if the signal belongs to a cluster that was flipped during hierarchical agglomerative clustering and 0 otherwise.
+  * *k-means/medians index*: index of the cluster to which the signal was assigned during k-means/medians clustering. The first cluster is 1. A cluster index of 0 means that this element was filtered out prior to clustering. (See the filtering options of {{{cagt}}}).
+  * *Hierarchical clustering index*: index of the cluster to which the signal was assigned during hierarchical agglomerative clustering. The first cluster is 1. A cluster index of 0 means that this element was filtered out prior to clustering. (See the filtering options of {{{cagt}}}).
