@@ -1,5 +1,5 @@
 #labels Featured
-# Installation instructions
+#Installation instructions
 
 === MATLAB version ===
 The code consists of a set of MATLAB scripts. No installation is required.
