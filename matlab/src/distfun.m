@@ -88,7 +88,7 @@ switch distance
         prod = dot(Y, Y, 2);
         D = bsxfun(@plus, -2 * X * Y', prod');
         if self
-            D = bsxfun(@plus, -2 * X * Y', prod);
+            D = bsxfun(@plus, D, prod);
         else
             D = bsxfun(@plus, D, dot(X, X, 2));
         end

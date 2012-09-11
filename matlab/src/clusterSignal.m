@@ -25,9 +25,9 @@ function [results, params] = clusterSignal(X, params)
 %      be passed to simpleKmeans (and hierarchicalClust).
 %
 %      nanTreat: how to treat NaN's in X. Possible values:
-%         'zero': replace with zeros (default)
+%         'zero': replace with zeros 
 %         'interpolate': use linear interpolation to interpolate missing
-%         values
+%         values (default)
 %
 %      maxNan: rows with more than that number of NaN's will be removed.
 %      Set to 0 if you want to keep all rows. Default is ceil(0.5 * P).
@@ -41,8 +41,8 @@ function [results, params] = clusterSignal(X, params)
 %      is 0.
 %
 %      display: Determines how much information will be output during the
-%      clustering. Set to '' to disable all output. See also simpleKmeans
-%      and hierarchicalClust.
+%      clustering. Set to 0 to disable all output. See also simpleKmeans
+%      and hierarchicalClust. Default 1.
 %
 %   RESULTS fields:
 %
@@ -90,7 +90,7 @@ distParams = params.distParams;
 merge = isfield(params, 'hcParams');
 
 if ~isfield(params, 'nanTreat')
-    params.nanTreat = 'zero';
+    params.nanTreat = 'interpolate';
 end
 nanTreat = params.nanTreat;
 validateRange(nanTreat, {'interpolate', 'zero'}, 'nanTreat');
@@ -130,16 +130,16 @@ end
 lowSignalPrc = params.lowSignalPrc;
 
 if ~isfield(params, 'display')
-    params.display = '';
+    params.display = 1;
 end
 display = params.display;
 
-if ~isfield(params, 'outlierPrc')
-    params.outlierPrc = 75;
-end
-outlierPrc = params.outlierPrc;
+% if ~isfield(params, 'outlierPrc')
+%     params.outlierPrc = 75;
+% end
+% outlierPrc = params.outlierPrc;
 
-if ~isempty(display)
+if display
     fprintf('Number of examples: %d\nSignal length: %d\n', numInitEx, p);
 end
 
@@ -152,12 +152,12 @@ results.maxNanInd = maxNanInd;
 kmeansInputInd = ~maxNanInd;
 newSignal = X(kmeansInputInd, :);
 
-if ~isempty(display)
+if display
     fprintf('Examples with <= %d missing values: %d\n', maxNan, sum(~maxNanInd));
 end
 
 if strcmp(nanTreat, 'interpolate')
-    if ~isempty(display)
+    if display
         fprintf('Interpolating missing values...\n');
     end
     % Interpolate missing values
@@ -199,7 +199,7 @@ normSignal(isnan(normSignal)) = 0;
 
 results.kmeansInputInd = kmeansInputInd;
 
-if ~isempty(display)
+if display
     fprintf('Examples with %d-th prctile value >= %.4f: %d\n', lowSignalPrc, lowSignalCut, sum(~lowSignalInd));
     fprintf('Examples with variance >= %.4f: %d\n', lowVarCut, sum(~lowVarInd));
     fprintf('Examples passing all cutoffs: %d\n', sum(kmeansInputInd));
@@ -236,12 +236,14 @@ results.kmeansResults = simpleKmeans(normSignal, params.kmeansParams, distParams
 results.hcInputInd = kmeansInputInd;
 
 if merge && (~isfield(params.hcParams, 'k') || params.hcParams.k < size(results.kmeansResults.centroids, 1))
-    if ~isempty(display)
+    if display
         fprintf('Starting merging\n');
         disp(params.hcParams);
     end
     results.hcResults = hierarchicalClust(results.kmeansResults, params.hcParams, distParams);
     finalResults = results.hcResults;
+elseif isfield(params.hcParams, 'k') && params.hcParams.k >= size(results.kmeansResults.centroids, 1) && display
+  fprintf('No need for merging\n');
 else
     finalResults = results.kmeansResults;
 end

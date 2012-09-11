@@ -39,9 +39,9 @@ function results = simpleKmeans(X, params, distParams)
 %      maxiter: Maximum number of iterations. Default is 100.
 %
 %      display: Determines how much output will be printed. Choices are:
-%          '' (empty string) - No output (default)
-%          'iter'            - Output at each iteration
-%          'final'           - Output only after the last iteration.
+%          0 - No output.
+%          1 - Output only after the last iteration (default).
+%          2 - Output at each iteration.
 %
 %      online: Flag indicating whether an "on-line update phase should be
 %      performed in addition to a "batch update" phase.  The on-line phase
@@ -126,7 +126,7 @@ end
 if isfield(params, 'display')
     display = params.display;
 else
-    display = '';
+    display = 1;
 end
 
 if isfield(distParams, 'distance')
@@ -161,7 +161,7 @@ validateRange(distance, {'sqeuclidean', 'correlation', 'xcorr'}, 'distance');
 validateRange(avgFun, {'mean', 'median'}, 'avgFun');
 validateReal(reps, 'replicates');
 validateRange(emptyact, {'error', 'drop', 'singleton'}, 'emptyaction');
-validateRange(display, {'', 'iter', 'final'}, 'display');
+validateattributes(display,  {'numeric'}, {'integer', 'scalar', 'nonnegative', '<=', 2}, 'simpleKmeans', 'display');
 
 % Remove rows with missing data
 nanRowInd = any(isnan(X), 2);
@@ -318,7 +318,7 @@ for rep = 1:reps
         sumD = accumarray(idx,d,[k,1]);
         totsumD = sum(sumD);
         
-        if strcmp(display, 'iter') || strcmp(display, 'final')
+        if display
             fprintf('%d iterations, total sum of distances = %g\n', iter, totsumD);
         end
         
@@ -388,7 +388,7 @@ changed = 1:k;
 previdx = zeros(n,1);
 prevtotsumD = Inf;
 
-if strcmp(display, 'iter')
+if display > 1
     fprintf('  iter\t phase\t     num\t         sum\n');
 end
 
@@ -459,7 +459,7 @@ while true
         iter = iter - 1;
         break;
     end
-    if strcmp(display, 'iter')
+    if display > 1
         fprintf(dispfmt,iter,1,length(moved),totsumD);
     end
     if iter >= maxit
@@ -556,7 +556,7 @@ while iter < maxit
         % in the middle of a pass through all the points
         if (iter == iter1) || nummoved > 0
             iter = iter + 1;
-            if display > 2 % 'iter'
+            if display > 1 % 'iter'
                 fprintf(dispfmt,iter,2,nummoved,totsumD);
             end
         end
@@ -570,7 +570,7 @@ while iter < maxit
     % If we've gone once through all the points, that's an iteration
     if moved <= lastmoved
         iter = iter + 1;
-        if display > 2 % 'iter'
+        if display > 1 % 'iter'
             fprintf(dispfmt,iter,2,nummoved,totsumD);
         end
         if iter >= maxit, break; end
@@ -634,4 +634,29 @@ end
 
 function b = dummyVal(x)
 b = true;
+end
+
+function [C, L] = kmeansppInit(X, k)
+% KMEANSPPINIT Initializes kmeans using the kmeans++ algorithm.
+% [C, L] = kmeansppInit(X, k) returns initial centroids for kmeans using the
+% kmeans++ algorithm (It doesn't actually run kmeans). k is the number of
+% clusters, X is an m-by-n matrix with m examples and n variables. C is a
+% k-by-n matrix with the centroids, L is a column vector of length m with the
+% centroid assignments for the examples in X.
+%
+% Based on kmeans by Laurent Sorber.
+% Author: sofiakp
+
+% Pick a random point as the first centroid.
+C = X(randi(size(X, 1)), :);
+% All the points fall in that cluster
+L = ones(size(X, 1), 1);
+for i = 2:k
+    % Find the squared distance to the closest centroid.
+    D = X - C(L, :);
+    D = dot(D, D, 2);
+    % Pick next centroid
+    C(i, :) = X(find(rand < cumsum(D)/sum(D), 1), :);
+    [~, L] = max(bsxfun(@minus, 2*real(X * C'), dot(C, C, 2)'), [], 2);
+end
 end

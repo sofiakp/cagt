@@ -1,0 +1,42 @@
+==================== Installation ====================
+The code consists of a set of matlab scripts. No installation is required.
+The MATLAB code was developed using MATLAB R2011b. 
+The R plotting code was developed using R versions 2.13-2.15 and requires the
+ggplot2 and reshape libraries.
+All the code was developed on 64-bit Linux.
+
+The code should be compatible with older (but reasonably new) vesions 
+of MATLAB and R and with other platforms, but we haven't tested it.
+
+==================== Code structure ====================
+clusterSignal runs CAGT clustering and writes the results in .mat files.
+cagt is a wrapper function around clusterSignal that can also produce 
+text output (including the output required to use the R plotting code).
+If you're not very experienced with MATLAB, it is recommended to use cagt 
+instead of calling clusterSignal directly.
+
+simpleKmeans runs k-means or k-medians on a matrix.
+hierarchicalClust gets a set of existing clusters and merges them using 
+hierarchical agglomerative clustering, with optional "flipping" of mirrored
+cluster.
+
+writeTextResults writes the clustering results in a BED-like format.
+makeSignalTable writes a text file with the mean signal and the signal percentiles
+in all clusters. It can also compute the mean signal of other datasets
+(i.e. not the one on which clustering was done) in the same set of clusters.
+This is useful for studying the associations between different types of signals.
+
+plot.cagt.multivariate.figs.R: Code for plotting the clustering results
+with many customization options. See the wiki for output examples.
+
+==================== Running the test code ====================
+The subdirectory data has some test data. 
+cagtDemo.m is a scipt that runs on the test data and demonstrates how to:
+- extract the signal around a set of loci of interest to create the necessary
+input file for cagt.
+- call cagt to cluster the signal.
+- make a multi-signal text file with the clusters and the signal of another
+histone mark aggregated in each cluster.
+
+plot.cagt.demo.R demonstrates how to plot the results using the output of 
+cagtDemo.m.
