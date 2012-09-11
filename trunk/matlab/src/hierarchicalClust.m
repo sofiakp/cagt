@@ -42,9 +42,9 @@ function results = hierarchicalClust(clustResults, params, distParams)
 %                           'maxlag')
 %
 %      display: Determines how much output will be printed. Choices are:
-%          '' (empty string) - No output (default)
-%          'iter'            - Output at each iteration
-%          'final'           - Output only after the last iteration.
+%           0 - No output.
+%           1 - Output only after the last iteration (default).
+%           2 - Output at each iteration.
 %
 %      lags: Initial optimal lags.
 %
@@ -150,7 +150,7 @@ end
 if isfield(params, 'display')
     display = params.display;
 else
-    display = '';
+    display = 1;
 end
 
 if isfield(distParams, 'distance')
@@ -168,7 +168,7 @@ end
 
 validateRange(distance, {'sqeuclidean', 'correlation', 'xcorr'}, 'distance');
 validateRange(avgFun, {'mean', 'median'}, 'avgFun');
-validateRange(display, {'', 'iter', 'final'}, 'display');
+validateattributes(display,  {'numeric'}, {'integer', 'scalar', 'nonnegative', '<=', 2}, 'hierarchicalClust', 'display');
 validateReal(lags, 'lags');
 validateReal(centroids, 'centroids');
 validateReal(idx, 'idx');
