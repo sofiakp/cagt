@@ -11,10 +11,22 @@ All the code was developed on 64-bit Linux.
 The code should be compatible with older (but reasonably new) vesions 
 of MATLAB and R and with other platforms, but we have only tested it in the settings mentioned above. Please email us if you run the code in other platforms, so we can update the requirements.
 
-=== Other distributions ===
+===Other distributions===
 In the near future, we plan to create MATLAB compiled code which you can run with the MATLAB compiler (i.e. without a full MATLAB installation). We're also developing a Python version of CAGT, but this won't be available soon.
 
-=== Recommended software ===
+===Recommended software===
 The following code is not required, but you might find it useful in creating the input files for CAGT:
   * [http://code.google.com/p/align2rawsignal/ align2rawsignal]: Reads files with mapped reads (eg. BAM) and creates tracks of signal along the genome. It can apply smoothing, normalization, or other filters.
   * [http://code.google.com/p/extractsignal/ extractSignal]: Starting from a genomewide signal and a set of loci of interest, it extracts the signal around the loci.
+
+===Testing the code===
+You can download some test data from [link].
+
+{{{cagtDemo.m}}} is a scipt that runs on the test data and demonstrates how to:
+  * Extract the signal around a set of loci of interest to create the necessary input file for cagt.
+  * Call {{{cagt}}} to cluster the signal.
+  * Make a multi-signal text file with the clusters and the signal of another histone mark aggregated in each cluster.
+
+{{{plot.cagt.demo.R}}} demonstrates how to plot the results using the output of {{{cagtDemo.m}}}.
+
+See [OutputFormats] for an explanation of the output formats and [Plotting] for details on how to make and interpret the plots.
