@@ -5,7 +5,7 @@
   * output.dir: name of output directory. If left NULL, the directory of the input file will be used.
   * output.file: prefix output file (without extension). If set to NULL, the file will be <prefix of input file>.<partner.marks>.<mag.shape>. Default: NULL.
   * output.format: format of figures, png or pdf (default).
-  * support.thresh: remove shapes whose support is < support.thresh * fraction of peaks in high signal component. Default: 0 (everything is plotted).
+  * support.thresh: remove shapes whose support is < support.thresh*fraction of peaks in high signal component. Default: 0 (everything is plotted).
   *   orient.shapes: If set to T then for the shape clusters, if required invert shapes to make them Low (left) to High (right). Default: T.                                       
   *   replace.flag: If set to F then if output files exist the function returns without plotting anything. Default: T
   *   partner.marks: The partner mark(s) that you want to plot alongside the target mark. You can specify multiple eg. c("GC","DNase"). Regular expressions are also allowed for matching. Set to "all" (default) to print all marks. Set this to "SIGNAL" if you don't want to print any partner marks.
@@ -28,4 +28,4 @@ whiskers = T
 
 http://cagt.googlecode.com/svn/wiki/nucleo_around_ctcf_multi_clusterData.SIGNAL.all.png
 
-The panels named P_<num> show the mean signal (bold line) and signal percentiles (shaded area) in the discovered clusters. The panel labelled "all" is an aggregation over all elements. The panel "high" shows the elements that passed all filtering criteria and participated in clustering. In this case, all elements passed the filtering. Otherwise, there would also be an extra panel "low".  
+The panels named {{{P_#}}} show the mean signal (bold line) and signal percentiles (shaded area) in the discovered clusters. The panel labeled "all" is an aggregation over all elements. The panel "high" shows the elements that passed all filtering criteria and participated in clustering. In this case, all elements passed the filtering. Otherwise, there would also be an extra panel "low".  

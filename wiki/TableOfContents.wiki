@@ -1,2 +1,4 @@
   * [Installation Installation]
+  * [Manual Manual]
   * [OutputFormats Output formats]
+  * [Plotting Plotting the clusters]

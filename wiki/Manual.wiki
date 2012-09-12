@@ -15,10 +15,10 @@ makeSignalTable writes a text file with the mean signal and the signal percentil
 
 {{{cagt}}} runs CAGT clustering on the signal around a set of loci of interest. It reads data from a file in MATLAB's {{{mat}}} format. The input file must contain the following variables:
   # intervalData: dataset with fields:
-    * chr[nominal] : chromosome names
-    * start[double]: start positions (1-based)
-    * stop[double]: stop positions (1-based)
-    * strand[nominal]: +/-
+    * chr (nominal) : chromosome names
+    * start (double): start positions (1-based)
+    * stop (double): stop positions (1-based)
+    * strand (nominal): +/-
   # signal: N-by-P matrix where N is the number of intervals. The i-th row should contain the signal (e.g. (normalized) intensity of a histone modification, TF binding, nucleosome positioning) in the corresponding interval. Clustering will therefore be applied on the rows of the signal matrix. 
 
 You can create the MATLAB structures any way you like. Assuming that you have a set of genomic intervals in BED format (or something equivalent) and mapped reads in BAM or tagAlign format, you can create the input files for CAGT as follows:
