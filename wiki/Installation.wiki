@@ -19,7 +19,7 @@ The following code is not required, but you might find it useful for creating th
   * [http://code.google.com/p/extractsignal/ extractSignal]: Starting from a genomewide signal and a set of loci of interest, it extracts the signal around the loci.
 
 ===Testing the code===
-You can download some test data from [link].
+You can download some test data from [ftp://ftp.ebi.ac.uk/pub/databases/ensembl/encode/users/anshul/humanENCODE/cagt/src/testdata/ here].
 
 {{{cagtDemo.m}}}, which is distributed with the rest of the code, demonstrates how:
   * Extract the signal around a set of loci of interest to create the input structures for {{{cagt}}}.
