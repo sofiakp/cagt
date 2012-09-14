@@ -33,98 +33,54 @@ You can create the MATLAB structures any way you like. Assuming that you have a 
   # cagt_clusters.bed: BED file with the assignments of elements to clusters. The format of this file is described [OuputFormats#BED_files here].
   # cagt_clusterData.txt: Cluster signal. The format of this file is described [OuputFormats#clusterData here].
 
-You can specify additional parameter-value pairs using a syntax {{{cagt(INFILE, 'param1', value1, 'param2', value2, ...). The accepted parameter-value pairs are described below.
+You can specify additional parameter-value pairs using a syntax {{{cagt(INFILE, 'param1', value1, 'param2', value2, ...)}}}. The accepted parameter-value pairs are described below.
 
 ===Output parameters===
-{{{
-     od: output directory. Default: working directory. 
-     op: prefix of output files. Default: 'cagt_'. Output files will be
-     <op>params.mat, <op>results.mat, [<op>clusterData.txt,
-     <op>clusters.bed].
-     tt: target type. Used for labeling the results in the clusterData
-       output file. Default: 'TARGET'.
-     st: signal type. Used for labeling the results in the clusterData output
-       file. Default: 'SIGNAL'.
-     bed: Write BED output. Default: true.
-     txt: Write clusterData.txt output. Default: true.
-     overwrite: If set to false, then CAGT won't overwrite any output
-       files (result, BED, or clusterData), if files with the same name
-       already exist in the output directory. Default false.
-     display: Determines how much output will be printed. Choices are:
-          0 - No output.
-          1 - Output only after the last iteration (default).
-          2 - Output at each iteration.
-}}}
+  * *od*: output directory. Default: working directory. 
+  * *op*: prefix of output files. Default: 'cagt`_`'. Output files will be {{{<op>params.mat, <op>results.mat, <op>clusterData.txt, <op>clusters.bed}}}.
+  * *tt*: target type. Used for labeling the results in the clusterData output file. Default: 'TARGET'.
+  * *st*: signal type. Used for labeling the results in the clusterData output file. Default: 'SIGNAL'.
+  * *bed*: Write BED output. Default: true.
+  * *txt*: Write clusterData.txt output. Default: true.
+  * *overwrite*: If set to false, then CAGT won't overwrite any output files (result, BED, or clusterData), if files with the same name already exist in the output directory. Default false.
+  * *display*: Determines how much output will be printed. Choices are:
+    * 0 - No output.
+    * 1 - Output only after the last iteration (default).
+    * 2 - Output at each iteration.
+
 ===Signal filtering parameters=== 
-{{{
-     maxNan: rows with more than that number of NaN's will be removed.
-       Set to 0 if you want to keep all rows. Default: ceil(.5 * size(signal, 2)).
-     lowSignalCut/lowSignalPrc: Remove rows whose lowSignalPrc-th
-       percentile is less than lowSignalCut. Defaults are 0 for
-       lowSingalCut and 90 for lowSignalPrc.
-     lowVarCut: rows with variance less than lowVarCut will be removed.
-       Useful when the distance metric used is correlation-based. Default: 0.
-     nanTreat: how to treat NaN's in the signal. Possible values:
-         'zero': replace with zeros.
-         'interpolate': use linear interpolation to interpolate missing
-         values (default).
-}}}
+  * *maxNan*: rows with more than that number of NaN's will be removed. Set to 0 if you want to keep all rows. Default: ceil(.5 `*` size(signal, 2)).
+  * *lowSignalCut/lowSignalPrc*: Remove rows whose lowSignalPrc-th percentile is less than lowSignalCut. Defaults are 0 for lowSingalCut and 90 for lowSignalPrc.
+  * *lowVarCut*: rows with variance less than lowVarCut will be removed. Useful when the distance metric used is correlation-based. Default: 0.
+  * *nanTreat*: how to treat NaN's in the signal. Possible values:
+    * 'zero': replace with zeros.
+    * 'interpolate': use linear interpolation to interpolate missing values (default).
+
 ===Distance metric parameters (apply to both clustering stages)===
-{{{
-     distance: Distance function, that K-means should minimize with
-     respect to.  Choices are:
-          'sqeuclidean'  - Squared Euclidean distance (default)
-          'correlation'  - One minus the sample correlation between points
-                           (treated as sequences of values)
-          'xcorr'        - One minus the maximum sample cross-correlation
-                           over all possible lags (see the option
-                           'maxlag')
-     avgFun: Method for computing cluster centroids. Choices are 'mean',
-       'median'. Default: mean.
-     maxlag: Maximum lag when xcorr is used as the distance measure.
-       Otherwise maxlag will be set to 0 and the value passed will be ignored.
-}}}
+
+  * *distance*: Distance function, that K-means should minimize with respect to.  Choices are:
+    * 'sqeuclidean'  - Squared Euclidean distance (default)
+    * 'correlation'  - One minus the sample correlation between points (treated as sequences of values)
+    * 'xcorr'        - One minus the maximum sample cross-correlation over all possible lags (see the option 'maxlag')
+  * *avgFun*: Method for computing cluster centroids. Choices are 'mean', 'median'. Default: mean.
+  * *maxlag*: Maximum lag when xcorr is used as the distance measure. Otherwise maxlag will be set to 0 and the value passed will be ignored.
+
 ===k-means/medians parameters===
-{{{
-     k: number of clusters for k-means/medians. Default: 40.
-     start: Method used to choose initial cluster centroid positions, 
-     sometimes known as "seeds".  Choices are:
-         'plus'    -  k-means++ initialization (default). 
-         'sample'  -  Select k observations from X at random.
-          matrix   -  A k-by-P matrix of starting locations.  In this case,
-                      the k parameter can be omitted, and K will be
-                      inferred from the first dimension of the matrix.
-                      You can also supply a 3D array, implying a value for
-                      replicates from the array's third dimension.
-     replicates: Number of times to repeat the clustering, each with a
-       new set of initial centroids.  Default is 1.
-     emptyaction: Action to take if a cluster loses all of its member
-     observations.  Choices are:
-          'error'     - Treat an empty cluster as an error (default)
-          'drop'      - Remove any clusters that become empty, and set
-                        the corresponding values in C and D to NaN.
-          'singleton' - Create a new cluster consisting of the one
-                        observation furthest from its centroid.
-     maxiter: Maximum number of iterations. Default: 100.
-     online: Flag indicating whether an "on-line update phase should be
-       performed in addition to a "batch update" phase.  The on-line phase
-       can be time consuming for large data sets, but guarantees a solution
-       that is a local minimum of the distance criterion, i.e., a partition
-       of the data where moving any single point to a different cluster
-       increases the total sum of distances.  NOT SUPPORTED YET. Default: false.
-}}}
+  * *k*: number of clusters for k-means/medians. Default: 40.
+  * *start*: Method used to choose initial cluster centroid positions, sometimes known as "seeds".  Choices are:
+    * 'plus'   -  k-means++ initialization (default). 
+    * 'sample' -  Select k observations from X at random.
+    * matrix   -  A k-by-P matrix of starting locations.  In this case, the k parameter can be omitted, and K will be inferred from the first dimension of the matrix. You can also supply a 3D array, implying a value for replicates from the array's third dimension.
+  * *replicates*: Number of times to repeat the clustering, each with new set of initial centroids.  Default is 1.
+  * *emptyaction*: Action to take if a cluster loses all of its member observations.  Choices are:
+    * 'error'     - Treat an empty cluster as an error (default)
+    * 'drop'      - Remove any clusters that become empty, and set the corresponding values in C and D to NaN.
+    * 'singleton' - Create a new cluster consisting of the one observation furthest from its centroid.
+  * *maxiter*: Maximum number of iterations. Default: 100.
+  * *online*: Flag indicating whether an "on-line update phase should be performed in addition to a "batch update" phase.  The on-line phase can be time consuming for large data sets, but guarantees a solution that is a local minimum of the distance criterion, i.e., a partition of the data where moving any single point to a different cluster increases the total sum of distances. *NOT SUPPORTED YET*. Default: false.
+
 ===Hierarchical clustering parameters===
-{{{
-     merge: Set to false if you do not want to apply hierarchical
-       agglomerative clustering. Default:true.
-     mergeK: final number of clusters after hierarchical agglomerative clustering. 
-       Default is 1 so merging will continue until there's only 1 cluster.
-       k cannot be greater than m, the number of input clusters.
-     mergeDist: maximum distance for merging. Merging will stop if the
-       distance between the two closest centroids is greater than maxDist,
-       or if the number of clusters reaches k. Default Inf.
-     flip: Whether flipping will be allowed or not. If flipping is allowed 
-       both an observation and its reversed (i.e. taking the P features
-       from end to start) will be considered when looking for the closest
-       cluster. Default: true (flipping allowed).
-}}}
+  * *merge*: Set to false if you do not want to apply hierarchical agglomerative clustering. Default:true.
+  * *mergeK*: final number of clusters after hierarchical agglomerative clustering. Default is 1 so merging will continue until there's only 1 cluster. k cannot be greater than m, the number of input clusters.
+  * *mergeDist*: maximum distance for merging. Merging will stop if the distance between the two closest centroids is greater than maxDist, or if the number of clusters reaches k. Default Inf.
+  * *flip*: Whether flipping will be allowed or not. If flipping is allowed both an observation and its reversed (i.e. taking the P features from end to start) will be considered when looking for the closest cluster. Default: true (flipping allowed).
