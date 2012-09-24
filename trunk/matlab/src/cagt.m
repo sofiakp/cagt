@@ -2,8 +2,8 @@ function cagt(infile, varargin)
 %CAGT(INFILE, VARARGIN) Runs CAGT clustering on a set of signals.
 %
 %   CAGT(INFILE) runs CAGT on data read from INFILE and writes the results
-%   in the current directories, in files prefixed with 'cagt_'. INFILE
-%   should be a mat file containing the following variables:
+%   in the current directory. INFILE should be a mat file containing the
+%   following variables:
 %
 %      intervalData: dataset with fields
 %        chr[nominal] : chromosome names
@@ -11,6 +11,13 @@ function cagt(infile, varargin)
 %        stop[double]: stop positions (1-based)
 %        strand[nominal]: +/-
 %      signal: N-by-P matrix where N is the number of intervals. Clustering will be applied on the rows of signal. 
+%
+%   CAGT writes the following outputs:
+%     cagt_params.mat: Calling parameters
+%     cagt_results.mat: Results of clusterSignal.
+%     cagt_clusters.bed: BED file with the assignments of elements to
+%     clusters (See wiki for details).
+%     cagt_clusterData.txt: Cluster signal (See wiki for details).
 %
 %   CAGT(INFILE, ...) can take additional optional parameter/value pairs:
 %
@@ -204,9 +211,9 @@ if ~exist(fullfile(od, [op, 'results.mat']), 'file') || overwrite
   save(fullfile(od, [op, 'results.mat']), '-struct', 'results');
   %saveResults(od, params, infile, signal, results);
 else
-  paramStruct = load(fullfile(od, 'params.mat'));
+  paramStruct = load(fullfile(od, [op, 'params.mat']));
   params = paramStruct.params;
-  results = load(fullfile(od, 'results.mat'));
+  results = load(fullfile(od, [op, 'results.mat']));
 end
 
 if parser.Results.bed
