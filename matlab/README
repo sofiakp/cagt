@@ -18,7 +18,7 @@ instead of calling clusterSignal directly.
 simpleKmeans runs k-means or k-medians on a matrix.
 hierarchicalClust gets a set of existing clusters and merges them using 
 hierarchical agglomerative clustering, with optional "flipping" of mirrored
-cluster.
+clusters.
 
 writeTextResults writes the clustering results in a BED-like format.
 makeSignalTable writes a text file with the mean signal and the signal percentiles
@@ -30,7 +30,8 @@ plot.cagt.multivariate.figs.R: Code for plotting the clustering results
 with many customization options. See the wiki for output examples.
 
 ==================== Running the test code ====================
-The subdirectory data has some test data. 
+You can download test data from here:
+ftp://ftp.ebi.ac.uk/pub/databases/ensembl/encode/users/anshul/humanENCODE/cagt/src/testdata/
 cagtDemo.m is a scipt that runs on the test data and demonstrates how to:
 - extract the signal around a set of loci of interest to create the necessary
 input file for cagt.
