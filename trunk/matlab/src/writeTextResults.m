@@ -34,21 +34,22 @@ if ~isempty(names) && length(names) ~= length(finalInd)
 end
 if nargin < 5
     adj = 0;
-end
-f = fopen(outfile, 'w');
-for i = 1:length(finalInd)
-    if exist('names', 'var')
-        name = char(names{i});
-    else
-        name = '.';
+    if nargin < 4
+      names = nominal(repmat('.', size(intervalData.start)));
     end
-    if ~isempty(intervalData)
-        s = sprintf('%s\t%d\t%d\t%s\t.\t%s\t', char(intervalData.chr(i)), intervalData.start(i) - 1 + adj, intervalData.stop(i) - adj, name, char(intervalData.strand(i)));
-    else
-        s = ['.\t.\t.\t', name, '.\t.\t'];
-    end
-    
-    fprintf(f, '%s\t%d\t%d\t%d\n', s, flippedInd(i), oversegIdx(i), clusterIdx(i));
 end
-fclose(f);
+
+cpData = dataset();
+cpData.chr = intervalData.chr;
+cpData.start = intervalData.start - 1 + adj;
+cpData.stop = intervalData.stop - adj;
+cpData.name = char(names);
+cpData.score = nominal(repmat('.', size(intervalData.start)));
+cpData.strand = intervalData.strand;
+cpData.flippedInd = flippedInd;
+cpData.oversegIdx = oversegIdx;
+cpData.clusterIdx = clusterIdx;
+
+export(cpData, 'file', outfile, 'WriteObsNames', false, 'WriteVarNames', false, 'Delimiter', '\t');
+
 end
