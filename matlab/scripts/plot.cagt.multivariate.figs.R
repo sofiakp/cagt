@@ -135,7 +135,7 @@ plot.cagt.multivariate.figs <- function(cagt.table.filename,
   }
   max.pos = max(main.data$Pos)
   min.pos = min(main.data$Pos)
-  middle.pos = round((max.pos - min.pos) / 2)
+  middle.pos = round((max.pos + min.pos) / 2)
   
   # If orient.shapes=T then invert shapes that are High(left) to Low(Right)
   if (orient.shapes == T) {
