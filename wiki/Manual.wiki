@@ -14,7 +14,7 @@ makeSignalTable writes a text file with the mean signal and the signal percentil
 ==CAGT input== 
 
 {{{cagt}}} runs CAGT clustering on the signal around a set of loci of interest. It reads data from a file in MATLAB's {{{mat}}} format. The input file must contain the following variables:
-  # intervalData: dataset with fields:
+  # intervalData: dataset array with fields:
     * chr (nominal) : chromosome names
     * start (double): start positions (1-based)
     * stop (double): stop positions (1-based)
