@@ -23,7 +23,7 @@ makeSignalTable writes a text file with the mean signal and the signal percentil
 
 You can create the MATLAB structures any way you like. Assuming that you have a set of genomic intervals in BED format (or something equivalent) and mapped reads in BAM or tagAlign format, you can create the input files for CAGT as follows:
   # Compute (normalized, smoothed etc) read counts along the genome using [http://code.google.com/p/align2rawsignal/ align2rawsignal]. 
-  # Extract the signal aroung the genomic intervals using [http://code.google.com/p/extractsignal/ extractSignal]. {{{extractSignal}}} produces exactly the structures expected by {{{cagt}}}. Remember to use the parameter -ov=signal in order to obtain a .mat file that is compatible with CAGT
+  # Extract the signal aroung the genomic intervals using [http://code.google.com/p/extractsignal/ extractSignal]. {{{extractSignal}}} produces exactly the structures expected by {{{cagt}}}. *Remember to use the parameter `-ov=signal` in order to obtain a .mat file that is compatible with CAGT*
 
 ==Running cagt==
 
